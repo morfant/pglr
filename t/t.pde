@@ -17,18 +17,18 @@ boolean drawEnable = true;
 
 void setup()
 {
-  size(1440, 900, P3D);
+  size(700, 700, P3D);
   smooth();
   noFill();
   stroke(255);
-  strokeWeight(0.5);
-  frameRate(30);
+  strokeWeight(0.1);
+  frameRate(60);
 
   posX = width/2;
   posY = height/2;
   posZ = 0;
 
-  side = width/12;
+  side = width/4;
 
   //noLoop();
 }
@@ -41,6 +41,7 @@ void draw()
   //fill(0, 0, 0, 60);
   //rect(0, 0, width, height);
   count_2 = 0;
+  count = 0;
 
   //count = 0;
   //posX = 0;
@@ -49,7 +50,7 @@ void draw()
   pushMatrix();
   translate(posX, posY, posZ);
   ////rotateY(PI*sin(millis()/100));
-  r(width/2, 10);
+  r(side, 200);
   popMatrix();
 
   //r2(side, count_2);
@@ -65,7 +66,7 @@ void draw()
   //posZ+=2;
   //posY+=0.5;
 
-  camera(width*mouseX/width, height*eyeY/height, height*mouseY/height, width/2, height/2, 0.0, 0.0, 1.0, 0.0);
+  camera(width/2+width*cos(millis()/250), height*eyeY/height, height/2+height*sin(millis()/150), width/2, height/2, 0.0, 0.0, 1.0, 0.0);
   //camera(width*mouseX/width, height*eyeY/height, height*mouseY/height, width/2, height/2, 0.0, 0.0, 1.0, 0.0);
 
   //saveFrame("frames/####.tif");
@@ -84,7 +85,7 @@ float r2(float in, int in2) {
   pushMatrix();
   translate(posX, posY, posZ);
   rotateY(PI*sin(millis()/100));
-  r(noise(in), 100);
+  r(noise(in), 200);
   popMatrix();
 
   if (count_2 < 1) {
@@ -107,7 +108,8 @@ float r(float in, int in2)
   //  posX+=in;
   //}
 
-  in=side*cos(in);
+  //in=side*cos(in);
+  in=side*tan(in);
   stroke(150+55*noise(in), 0, noise(in)*80, noise(in)*255);
 
 
@@ -115,13 +117,14 @@ float r(float in, int in2)
   pushMatrix();
   //translate(posX, posY, posZ);
   //rotateX(noise(cos(in)*PI));
-  rotateY(noise(0, sin(in)*PI/2));
-  box(in);
+  //rotateY(noise(0, sin(in)*PI/2));
+  //box(in);
+  sphere(in);
   popMatrix();
   //in/=count;
 
-  if (count < 100) {
-    println("count: " + count);
+  if (count < in2) {
+    //println("count: " + count);
     //println("r(in)");
     //println("posX: " + posX);
     r(in, in2);
@@ -130,7 +133,7 @@ float r(float in, int in2)
 
   //posX = posX%width;
 
-
+  //println("in: " + in);
   return in;
 }
 
