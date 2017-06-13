@@ -5,8 +5,9 @@ class Puller {
   float spd = 20.0;
   float force = 0.5;
   float r = 60;
+  float m = r*0.1;
   int findRange = 100;
-  color c = color(255, 25, 5);
+  color c = color(125, 25, 5);
 
   Puller() {
     pos = new PVector(random(r/2, width-r/2), random(r/2, height-r/2));
@@ -28,6 +29,18 @@ class Puller {
     
   }
   
+  
+  boolean isCollide(Puller other){
+    float d = PVector.dist(pos, other.pos);
+    
+    if (d <= r + other.r){
+      return true;
+    }
+    
+    return false;
+  }
+  
+  
 
   void update() {
 
@@ -40,7 +53,7 @@ class Puller {
   void draw() {
     pushMatrix();
     translate(pos.x, pos.y);
-    fill(c);
+    fill(c, 200);
     ellipse(0, 0, r, r);
     popMatrix();
   }
