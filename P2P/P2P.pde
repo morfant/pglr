@@ -1,4 +1,4 @@
-int nPuller = 200;
+int nPuller = 50;
 int nPulle = 5;
 
 ArrayList<Puller> pullers;
@@ -17,11 +17,10 @@ void setup() {
   for (int i = 0; i < nPuller; i++) {
     pullers.add(new Puller());
   }
-  
+
   for (int i = 0; i < nPulle; i++) {
     pulles.add(new Pulle());
   }
-  
 }
 
 
@@ -33,25 +32,21 @@ void draw() {
     p.update();
     p.draw();
   }
-  
-  for (int i = nPuller-1; i > 0; i--){
+
+  for (int i = nPuller-1; i >= 1; i--) {
     Puller a = pullers.get(i);
-    for (int j = i - 1; j > 0; j--){
+    for (int j = i - 1; j >= 0; j--) {
       Puller b = pullers.get(j);
-      if (a.isCollide(b)){
-        //println("puller " + i + " with " + j + " is collide!");
-        stroke(255);
-        strokeWeight(0.4);
-        line(a.pos.x, a.pos.y, b.pos.x, b.pos.y);
-      }
-      
+      a.checkCollision(b);
+      //println(b.overlapTime);
     }
   }
 
-  // Manage Pulles
-  for (Pulle p : pulles) {
-    p.update();
-    p.draw();
-  }
-  
+
+// Manage Pulles
+for (Pulle p : pulles) {
+  p.update();
+  p.draw();
+}
+
 }
