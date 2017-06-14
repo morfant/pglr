@@ -1,4 +1,6 @@
 class Pulle{
+  
+  
     
   void update(){
   

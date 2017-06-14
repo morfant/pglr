@@ -5,8 +5,8 @@ class Puller {
   PVector velocity = new PVector(0, 0, 0);
   float spd = 200.0;
   float force = 0.5;
-  float r = 40;
-  color c = color(255, 25, 5);
+  float r = 80;
+  color c = color(155, 25, 5);
 
   Puller() {
     pos = new PVector(random(r/2, width-r/2), random(r/2, height-r/2));
