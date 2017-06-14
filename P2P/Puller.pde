@@ -5,10 +5,10 @@ class Puller {
   PVector velocity = new PVector(0, 0, 0);
   float spd = 20.0;
   float force = 0.5;
-  float r = 60;
+  float r = 80;
   float m = r*0.1;
   int findRange = 100;
-  color c = color(125, 25, 5);
+  color c = color(155, 25, 5);
   int overlapTime = 0;
 
   Puller() {
