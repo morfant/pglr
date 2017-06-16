@@ -9,14 +9,14 @@ class Puller {
   float force = 0.5;
   float power = 1.0;
   float pullRange = 100;
-  float r = 10;
-  float dens = 0.5;
+  float r = 14;
+  float dens = 0.9;
   color c = color(155, 25, 5);
 
 
   Puller() {
     inSensor = new ArrayList<Puller>();
-    r = random(5.0, 30.0);
+    r = random(5.0, 20.0);
     sensor = new Sensor(pos, r * 3);
     //power = random(0.1, 1.0);
     pos = new PVector(random(r/2, width-r/2), random(r/2, height-r/2));
@@ -76,7 +76,7 @@ class Puller {
 
     // Parameters that affect physics
     fd.density = dens;
-    fd.friction = 0.001;
+    fd.friction = 0.1;
     fd.restitution = 0.001;
 
     // Define the body and make it from the shape
@@ -133,7 +133,7 @@ class Puller {
     ellipse(0, 0, r, r);
     popMatrix();
 
-    //sensor.draw();
+    sensor.draw();
   }
 
   void applyForce(Vec2 v, Vec2 posA, Vec2 posB) {

@@ -6,11 +6,13 @@ import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
+import controlP5.*;
 
+ControlP5 cp5;
 
-int nPuller = 1000;
+int nPuller = 100;
 int nPulle = 5;
-float strength = 50;
+int forceStrength = 50;
 
 ArrayList<Boundary> boundaries;
 
@@ -25,6 +27,15 @@ void setup() {
   frameRate(30);
   smooth();
 
+  cp5 = new ControlP5(this);
+  // add a horizontal sliders, the value of this slider will be linked
+  // to variable 'sliderValue' 
+  cp5.addSlider("slider")
+    .setPosition(width - 300, 100)
+    .setSize(200, 20)
+    .setRange(-300, 300)
+    .setValue(1)
+    ;
 
   box2d = new Box2DProcessing(this);
   box2d.createWorld();
@@ -95,7 +106,7 @@ void keyPressed() {
 
       force.normalize();
 
-      force.mulLocal(strength);         // Get force vector --> magnitude * direction
+      force.mulLocal(forceStrength);         // Get force vector --> magnitude * direction
 
       Vec2 p1_pos = box2d.getBodyPixelCoord(p1.body);
       Vec2 p2_pos = box2d.getBodyPixelCoord(p2.body);
@@ -130,7 +141,7 @@ void getContactBody(Fixture f1, Fixture f2) {
     Vec2 force = pos.sub(otherPos);
     force.normalize();
     float strength = 10;
-    force.mulLocal(strength * -1);         // Get force vector --> magnitude * direction
+    force.mulLocal(forceStrength * -1);         // Get force vector --> magnitude * direction
 
     //println(force);
     sensor.applyForce(force, sensor.getWorldCenter());
@@ -169,13 +180,13 @@ void beginContact(Contact cp) {
 
   if ((sensorA ^ sensorB)) {
 
-//    if (sensorA) {
-//      sensor = f1.getBody();
-//      other = f2.getBody();
-//    } else {
-//      sensor = f2.getBody();
-//      other = f1.getBody();
-//    }
+    //    if (sensorA) {
+    //      sensor = f1.getBody();
+    //      other = f2.getBody();
+    //    } else {
+    //      sensor = f2.getBody();
+    //      other = f1.getBody();
+    //    }
 
     //Object o_sensor = sensor.getUserData();
     //Object o_other = other.getUserData();
@@ -249,4 +260,10 @@ void beginContact(Contact cp) {
 // Objects stop touching each other
 void endContact(Contact cp) {
   //println("contact end");
+}
+
+void slider(int strength) {
+  forceStrength = strength;
+  //println("a slider event. setting forceStrength to "+strength);
+  //println(forceStrength);
 }
