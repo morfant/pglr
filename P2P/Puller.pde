@@ -133,7 +133,7 @@ class Puller {
     ellipse(0, 0, r, r);
     popMatrix();
 
-    sensor.draw();
+    //sensor.draw();
   }
 
   void applyForce(Vec2 v, Vec2 posA, Vec2 posB) {

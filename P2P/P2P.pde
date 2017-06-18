@@ -10,7 +10,7 @@ import controlP5.*;
 
 ControlP5 cp5;
 
-int nPuller = 100;
+int nPuller = 600;
 int nPulle = 5;
 int forceStrength = 50;
 
