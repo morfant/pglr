@@ -1,62 +1,39 @@
 class Puller {
 
-  ArrayList<Puller> inSensor;
   Body body;
   Sensor sensor;
-  PVector pos = new PVector(0, 0, 0);
-  PVector velocity = new PVector(0, 0, 0);
-  float spd = 10.0;
+  Vec2 pos = new Vec2(0, 0);
+  Vec2 velocity = new Vec2(0, 0);
+  Vec2 force_vec2 = new Vec2(0, 0);
+  float spd = 50.0;
   float force = 0.5;
   float power = 1.0;
   float pullRange = 100;
   float r = 14;
-  float dens = 0.9;
-  color c = color(155, 25, 5);
+  float dens = 0.4;
+  color c = color(155, 25, 5, 100);
 
 
   Puller() {
-    inSensor = new ArrayList<Puller>();
-    r = random(5.0, 20.0);
+    r = random(5.0, 30.0);
+    r = 10.0;
     sensor = new Sensor(pos, r * 3);
     //power = random(0.1, 1.0);
-    pos = new PVector(random(r/2, width-r/2), random(r/2, height-r/2));
-    velocity = new PVector(random(-0.5, 0.5)*spd, random(-0.5, 0.5)*spd);
-    
+    pos = new Vec2(random(r/2, width-r/2), random(r/2, height-r/2));
+    velocity = new Vec2(random(-0.5, 0.5)*spd, random(-0.5, 0.5)*spd);
+
     makeBody(new Vec2(pos.x, pos.y), r);
     sensor.make(body);
 
     body.setLinearVelocity(new Vec2(velocity.x, velocity.y));
     body.setAngularVelocity(random(-5, 5));
-
-
   }
 
-  void addNeighbour(Puller n){
-    inSensor.add(n);
-  }
-  
-  void subNeighbour(int idx){
-    inSensor.remove(idx);
-  }
 
   // This function removes the particle from the box2d world
   void killBody() {
     box2d.destroyBody(body);
   }
-
-  void keepBorder() {
-
-    if (pos.x + r/2 >= width) {
-      velocity.x *= -1.0;
-    } else if (pos.x - r/2 <= 0) {
-      velocity.x *= -1.0;
-    } else if (pos.y - r/2 <= 0) {
-      velocity.y *= -1.0;
-    } else if (pos.y + r/2 >= height) {
-      velocity.y *= -1.0;
-    }
-  }
-
 
   void makeBody(Vec2 center, float _r) {
 
@@ -64,7 +41,7 @@ class Puller {
     CircleShape circle = new CircleShape();
     float r_toWorld = box2d.scalarPixelsToWorld(_r);
     circle.m_radius = r_toWorld/2;
-    
+
 
     // Define a fixture
     FixtureDef fd = new FixtureDef();
@@ -76,8 +53,8 @@ class Puller {
 
     // Parameters that affect physics
     fd.density = dens;
-    fd.friction = 0.1;
-    fd.restitution = 0.001;
+    fd.friction = 0.01;
+    fd.restitution = 0.3;
 
     // Define the body and make it from the shape
     BodyDef bd = new BodyDef();
@@ -87,39 +64,23 @@ class Puller {
     body = box2d.createBody(bd);
     body.createFixture(fd);
     body.setUserData(this);
-
-
-    /*
-    // attach sensor
-     CircleShape circle_sensor = new CircleShape();
-     float r_toWorld_sensor = box2d.scalarPixelsToWorld(_r * 2);
-     circle_sensor.m_radius = r_toWorld_sensor/2;
-     
-     // Define a fixture
-     FixtureDef fd_sensor = new FixtureDef();
-     fd_sensor.shape = circle_sensor;
-     fd_sensor.isSensor = true;
-     //fd_sensor.filter.categoryBits = BIT_SENSOR;
-     //fd_sensor.filter.maskBits = BIT_PULLER;
-     
-     body.createFixture(fd_sensor);
-     //body.setUserData(this);
-     */
   }
 
   void update() {
 
-    //keepBorder();
-    //pos.add(velocity);
     Vec2 body_pos = box2d.getBodyPixelCoord(body);
-    PVector _pos = new PVector(body_pos.x, body_pos.y, 0);
+    Vec2 _pos = new Vec2(body_pos.x, body_pos.y);
     sensor.update(_pos);
+
+    forceFowardNeighbour();
   }
 
 
   void draw() {
 
+    stroke(255);
     fill(c);
+    strokeWeight(1);
 
     // We look at each body and get its screen position
     Vec2 _pos = box2d.getBodyPixelCoord(body);
@@ -129,20 +90,44 @@ class Puller {
 
     pushMatrix();
     translate(_pos.x, _pos.y);
+    
+    // force director - before rotating
+    stroke(255, 0, 255);    
+    strokeWeight(2);
+    //line(0, 0, force_vec2.x/forceStrength, -force_vec2.y/forceStrength);
+    line(0, 0, force_vec2.x, -force_vec2.y);    
+
+    // Circle
+    stroke(255);
+    strokeWeight(1);
+    noStroke();
     rotate(-a);
     ellipse(0, 0, r, r);
+
     popMatrix();
 
-    //sensor.draw();
+    sensor.draw();
   }
 
-  void applyForce(Vec2 v, Vec2 posA, Vec2 posB) {
-    Vec2 body_pos = box2d.getBodyPixelCoord(body);
-    
-    println("force: " + v);
-    stroke(255, 0, 255);
-    //strokeWeight(10);
-    line(posA.x, posA.y, posB.x, posB.y);
-    body.applyForce(v, body.getWorldCenter());
+
+  void forceFowardNeighbour() {
+    Vec2 this_body_pos = body.getWorldCenter();
+    //Vec2 force = new Vec2(0, 0);
+    PVector force = new PVector(0, 0);
+    for (Object o : sensor.neighbourList) {
+      if (o.getClass() == Puller.class) {
+        Puller p = (Puller) o;
+        Vec2 f = p.body.getWorldCenter().sub(body.getWorldCenter());
+        force = PVector.add(force, new PVector(f.x, f.y));
+        //println("f: " + f);
+      }
+    }
+
+    force.normalize();
+    //println("force: " + force);
+
+    force_vec2 = new Vec2(force.x, force.y);
+    force_vec2.mulLocal(forceStrength * this.body.m_mass);
+    this.body.applyForce(force_vec2, this.body.getWorldCenter());
   }
 }

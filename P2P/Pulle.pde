@@ -1,4 +1,4 @@
-class Pulle {
+class Pullee {
 
   
   PVector pos = new PVector(0, 0, 0);
@@ -9,7 +9,7 @@ class Pulle {
   color c = color(255, 205, 50);
 
 
-  Pulle() {
+  Pullee() {
     pos = new PVector(random(r/2, width-r/2), random(r/2, height-r/2));
     velocity = new PVector(random(-0.5, 0.5)*spd, random(-0.5, 0.5)*spd);
   }
