@@ -4,23 +4,22 @@ class Puller {
   Sensor sensor;
   Vec2 pos = new Vec2(0, 0);
   Vec2 velocity = new Vec2(0, 0);
-  Vec2 force_vec2 = new Vec2(0, 0);
-  float spd = 50.0;
-  float force = 0.5;
-  float power = 1.0;
-  float pullRange = 100;
-  float r = 14;
+  Vec2 force = new Vec2(0, 0);
+  float velMul = 50.0;
+  float r = 20;
   float dens = 0.4;
   color c = color(155, 25, 5, 100);
 
+  float power = 1.0;
+  float pullRange = 100;
+
 
   Puller() {
-    r = random(5.0, 30.0);
-    r = 10.0;
+    //r = random(15.0, 30.0);
     sensor = new Sensor(pos, r * 3);
     //power = random(0.1, 1.0);
     pos = new Vec2(random(r/2, width-r/2), random(r/2, height-r/2));
-    velocity = new Vec2(random(-0.5, 0.5)*spd, random(-0.5, 0.5)*spd);
+    velocity = new Vec2(random(-0.5, 0.5)*velMul, random(-0.5, 0.5)*velMul);
 
     makeBody(new Vec2(pos.x, pos.y), r);
     sensor.make(body);
@@ -49,7 +48,6 @@ class Puller {
 
     fd.filter.categoryBits = BIT_PULLER;
     fd.filter.maskBits = BIT_BOUNDARY | BIT_SENSOR | BIT_PULLER;
-
 
     // Parameters that affect physics
     fd.density = dens;
@@ -90,12 +88,11 @@ class Puller {
 
     pushMatrix();
     translate(_pos.x, _pos.y);
-    
+
     // force director - before rotating
     stroke(255, 0, 255);    
-    strokeWeight(2);
-    //line(0, 0, force_vec2.x/forceStrength, -force_vec2.y/forceStrength);
-    line(0, 0, force_vec2.x, -force_vec2.y);    
+    strokeWeight(1);
+    //line(0, 0, force.x, -force.y);    
 
     // Circle
     stroke(255);
@@ -106,28 +103,33 @@ class Puller {
 
     popMatrix();
 
-    sensor.draw();
+    //sensor.draw();
   }
 
 
   void forceFowardNeighbour() {
     Vec2 this_body_pos = body.getWorldCenter();
     //Vec2 force = new Vec2(0, 0);
-    PVector force = new PVector(0, 0);
+    PVector forceSum = new PVector(0, 0);
     for (Object o : sensor.neighbourList) {
-      if (o.getClass() == Puller.class) {
+      if (o.getClass() == Pullee.class) {
+        Pullee p = (Pullee) o;
+        Vec2 f = p.body.getWorldCenter().sub(body.getWorldCenter());
+        forceSum = PVector.add(forceSum, new PVector(f.x*attraction_Pullee, f.y*attraction_Pullee));
+        //println("f: " + f);
+      } else if (o.getClass() == Puller.class) {
         Puller p = (Puller) o;
         Vec2 f = p.body.getWorldCenter().sub(body.getWorldCenter());
-        force = PVector.add(force, new PVector(f.x, f.y));
+        forceSum = PVector.add(forceSum, new PVector(f.x*attraction_Puller, f.y*attraction_Puller));
         //println("f: " + f);
       }
     }
 
-    force.normalize();
+    forceSum.normalize();
     //println("force: " + force);
 
-    force_vec2 = new Vec2(force.x, force.y);
-    force_vec2.mulLocal(forceStrength * this.body.m_mass);
-    this.body.applyForce(force_vec2, this.body.getWorldCenter());
+    force = new Vec2(forceSum.x, forceSum.y);
+    force.mulLocal(forceStrength * this.body.m_mass);
+    this.body.applyForce(force, this.body.getWorldCenter());
   }
 }

@@ -10,9 +10,13 @@ import controlP5.*;
 
 ControlP5 cp5;
 
-int nPuller = 400;
-int nPulle = 5;
+int nPuller = 300;
+int nPullee = 20;
+
 float forceStrength = 0.0;
+float attraction_Puller = 1.0;
+float attraction_Pullee = 3.0;
+
 
 ArrayList<Boundary> boundaries;
 
@@ -23,7 +27,7 @@ Box2DProcessing box2d;
 
 
 void setup() {
-  size(500, 500);
+  size(800, 800);
   frameRate(30);
   smooth();
 
@@ -33,9 +37,24 @@ void setup() {
   cp5.addSlider("f_mul")
     .setPosition(width - 250, 10)
     .setSize(200, 10)
-    .setRange(-3.0, 3.0)
+    .setRange(-20.0, 20.0)
     .setValue(0.0)
     ;
+
+  cp5.addSlider("attr_ee")
+    .setPosition(width - 250, 20)
+    .setSize(200, 10)
+    .setRange(1.0, 5.0)
+    .setValue(1.0)
+    ;
+
+  cp5.addSlider("attr_er")
+    .setPosition(width - 250, 30)
+    .setSize(200, 10)
+    .setRange(1.0, 5.0)
+    .setValue(1.0)
+    ;
+
 
   box2d = new Box2DProcessing(this);
   box2d.createWorld();
@@ -55,9 +74,14 @@ void setup() {
   pullers = new ArrayList<Puller>();
   pullees = new ArrayList<Pullee>();
 
-
+  // Puller
   for (int i = 0; i < nPuller; i++) {
     pullers.add(new Puller());
+  }
+
+  // Pullee
+  for (int i = 0; i < nPullee; i++) {
+    pullees.add(new Pullee());
   }
 }
 
@@ -161,22 +185,28 @@ void addNeighborList(Fixture f1, Fixture f2) {
   Body sensor;
   Body other;
 
-  if ((sensorA ^ sensorB)) {
+  if ((sensorA ^ sensorB)) {    
 
     if (sensorA) {
       sensor = f1.getBody();
       other = f2.getBody();
-
-      //Object otherObj = other.getUserData();
-      //if (otherObj.getClass() == Puller.class) {
-      //  Puller p = (Puller) otherObj;
-      //} else if (otherObj.getClass() == Pullee.class) {
-      //  Pullee p = (Pullee) otherObj;
-      //}
     } else {
       sensor = f2.getBody();
       other = f1.getBody();
     }  
+
+
+    //Vec2 worldPos_1 = sensor.getWorldCenter();
+    //Vec2 worldPos_2 = other.getWorldCenter();
+    //println(worldPos_1);
+    //println(worldPos_2);  
+    //float r1 = sensor.getFixtureList().getShape().m_radius;
+    //float r2 = other.getFixtureList().getShape().m_radius;
+    //float d = dist(worldPos_1.x, worldPos_1.y, worldPos_2.x, worldPos_2.y);
+    //getContactBody(f1, f2);
+    //if (d <= (r1 + r2) ) {
+    //println(d);
+    //println(r1 + " / " + r2);
 
     Object sensorObj = sensor.getFixtureList().getUserData();      
     Object otherObj = other.getUserData();
@@ -186,6 +216,9 @@ void addNeighborList(Fixture f1, Fixture f2) {
 
     Sensor s = (Sensor) sensorObj;
     s.addNeighbour(otherObj);
+    //}
+
+
 
 
 
@@ -261,45 +294,10 @@ void beginContact(Contact cp) {
   Fixture f1 = cp.getFixtureA();
   Fixture f2 = cp.getFixtureB();
 
-  //getContactBody(f1, f2);
+  Body b1 = f1.getBody();
+  Body b2 = f2.getBody();
+
   addNeighborList(f1, f2);
-
-  boolean sensorA = f1.isSensor();
-  boolean sensorB = f2.isSensor();
-
-  Body sensor;
-  Body other;
-
-  if ((sensorA ^ sensorB)) {
-  }
-
-  ////println(f1);
-
-  //boolean sensorA = f1.isSensor();
-  //boolean sensorB = f2.isSensor();
-
-  //if (! (sensorA ^ sensorB) ) {
-  //}
-  //// Get both bodies
-  //Body b1 = f1.getBody();
-  //Body b2 = f2.getBody();
-
-  ////println(b1);
-
-
-  //// Get our objects that reference these bodies
-  //Object o1 = b1.getUserData();
-  //Object o2 = b2.getUserData();
-
-  //println(o1);
-  //println(o2);
-
-  //if (o1.getClass() == Sensor.class && o2.getClass() == Puller.class) {
-  //  Sensor s1 = (Sensor) o1;
-  //  s1.change();
-  //  //Puller p2 = (Puller) o2;
-  //  //p2.change();
-  //}
 }
 
 // Objects stop touching each other
@@ -307,12 +305,22 @@ void endContact(Contact cp) {
   //println("contact end");
   Fixture f1 = cp.getFixtureA();
   Fixture f2 = cp.getFixtureB();
-  
+
   removeNeighborList(f1, f2);
 }
 
+
+// controlP5 event function
 void f_mul(float strength) {
   forceStrength = strength;
   //println("a slider event. setting forceStrength to "+strength);
   //println(forceStrength);
+}
+
+void attr_er(float attr) {
+  attraction_Puller = attr;
+}
+
+void attr_ee(float attr) {
+  attraction_Pullee = attr;
 }

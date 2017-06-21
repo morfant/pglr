@@ -3,15 +3,12 @@ class Sensor {
   Body body;
   Vec2 pos = new Vec2(0, 0);
   Vec2 velocity = new Vec2(0, 0);
-  float spd = 2.0;
-  float force = 0.5;
-  float power = 1.0;
-  float pullRange = 100;
+  float velMul = 2.0;
   float r = 80;
-  color c = color(155, 25, 5);
-  boolean isFill = false;
+  color c = color(155, 25, 5);  
+  boolean isFill;
   ArrayList<Object> neighbourList;
-
+  
 
   Sensor(Vec2 _pos, float _r) {
     neighbourList = new ArrayList<Object>();
@@ -31,19 +28,19 @@ class Sensor {
     isFill = false;
   
 
-    //if (isFill) {
-    //  fill(0, 200, 100);
-    //} else {
-    //  noFill();
-    //  stroke(0, 200, 100);
-    //}
+    if (isFill) {
+      fill(0, 200, 100);
+    } else {
+      noFill();
+      stroke(0, 200, 100);
+    }
 
     pushMatrix();
     translate(pos.x, pos.y);
     ellipse(0, 0, r, r);
     
-    //stroke(255);
-    //text(neighbourList.size(), 0, 0);
+    stroke(255);
+    text(neighbourList.size(), 0, 0);
     
     popMatrix();
   }
