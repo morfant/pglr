@@ -10,10 +10,10 @@ import controlP5.*;
 
 ControlP5 cp5;
 
-int nPuller = 300;
-int nPullee = 20;
+int nPuller = 1000;
+int nPullee = 0;
 
-float forceStrength = 0.0;
+float forceStrength = 2.0;
 float attraction_Puller = 1.0;
 float attraction_Pullee = 3.0;
 
@@ -27,7 +27,7 @@ Box2DProcessing box2d;
 
 
 void setup() {
-  size(800, 800);
+  size(300, 400);
   frameRate(30);
   smooth();
 
@@ -37,8 +37,8 @@ void setup() {
   cp5.addSlider("f_mul")
     .setPosition(width - 250, 10)
     .setSize(200, 10)
-    .setRange(-20.0, 20.0)
-    .setValue(0.0)
+    .setRange(-30.0, 30.0)
+    .setValue(2.0)
     ;
 
   cp5.addSlider("attr_ee")
@@ -85,6 +85,32 @@ void setup() {
   }
 }
 
+void reset() {
+
+  // kill all  
+  for (Puller p : pullers) {
+    p.killBody();
+    p = null;
+  }
+
+  for (Pullee p : pullees) {
+    p.killBody();
+    p = null;
+  }
+
+  pullers = new ArrayList<Puller>();
+  pullees = new ArrayList<Pullee>();  
+
+  // Puller
+  for (int i = 0; i < nPuller; i++) {
+    pullers.add(new Puller());
+  }
+
+  // Pullee
+  for (int i = 0; i < nPullee; i++) {
+    pullees.add(new Pullee());
+  }
+}
 
 void draw() {
   background(0);
@@ -110,6 +136,8 @@ void draw() {
     p.draw();
   }
 }
+
+
 
 void keyPressed() {
   if (key == CODED) {
@@ -137,6 +165,8 @@ void keyPressed() {
 
       //p1.applyForce(force, p1_pos, p2_pos);
     }
+  } else if (key == 'r' || key == 'R') {
+    reset();
   }
 }
 
@@ -216,6 +246,8 @@ void addNeighborList(Fixture f1, Fixture f2) {
 
     Sensor s = (Sensor) sensorObj;
     s.addNeighbour(otherObj);
+
+
     //}
 
 
@@ -294,8 +326,8 @@ void beginContact(Contact cp) {
   Fixture f1 = cp.getFixtureA();
   Fixture f2 = cp.getFixtureB();
 
-  Body b1 = f1.getBody();
-  Body b2 = f2.getBody();
+  //Body b1 = f1.getBody();
+  //Body b2 = f2.getBody();
 
   addNeighborList(f1, f2);
 }
@@ -310,7 +342,7 @@ void endContact(Contact cp) {
 }
 
 
-// controlP5 event function
+// ---------- controlP5 event function ----------
 void f_mul(float strength) {
   forceStrength = strength;
   //println("a slider event. setting forceStrength to "+strength);

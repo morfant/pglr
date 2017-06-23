@@ -6,9 +6,9 @@ class Sensor {
   float velMul = 2.0;
   float r = 80;
   color c = color(155, 25, 5);  
-  boolean isFill;
+  boolean isFill = false;
   ArrayList<Object> neighbourList;
-  
+
 
   Sensor(Vec2 _pos, float _r) {
     neighbourList = new ArrayList<Object>();
@@ -23,10 +23,6 @@ class Sensor {
   void draw() {
 
     strokeWeight(0.1);
-    
-    isFill = true;
-    isFill = false;
-  
 
     if (isFill) {
       fill(0, 200, 100);
@@ -38,10 +34,11 @@ class Sensor {
     pushMatrix();
     translate(pos.x, pos.y);
     ellipse(0, 0, r, r);
-    
+
     stroke(255);
-    text(neighbourList.size(), 0, 0);
-    
+    textSize(20);
+    text(neighbourList.size(), -7, 5);
+
     popMatrix();
   }
 
@@ -68,12 +65,16 @@ class Sensor {
     _body.getFixtureList().setUserData(this);
   }
 
+  int numNeighbour(){
+    return neighbourList.size();
+  }
+  
   void addNeighbour(Object o) {
     neighbourList.add(o);
   }
 
   int indexOf(Object o) {
-    for (int i = 0; i < neighbourList.size(); i++) {
+    for (int i = neighbourList.size() - 1; i >= 0; i--) {
       if (neighbourList.get(i) == o) {
         return i;
       }

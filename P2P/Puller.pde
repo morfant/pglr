@@ -1,14 +1,20 @@
 class Puller {
 
+  boolean sensorDraw = false;
+  boolean directionDraw = false;
   Body body;
   Sensor sensor;
   Vec2 pos = new Vec2(0, 0);
   Vec2 velocity = new Vec2(0, 0);
   Vec2 force = new Vec2(0, 0);
   float velMul = 50.0;
-  float r = 20;
+  float r = 5;
   float dens = 0.4;
-  color c = color(155, 25, 5, 100);
+  //color n = color(155, 25, 5, 200);
+  color n = color(255, 250, 250, 150);
+  color c = color(155, 225, 15, 100);
+
+  boolean inContact = false;
 
   float power = 1.0;
   float pullRange = 100;
@@ -31,7 +37,9 @@ class Puller {
 
   // This function removes the particle from the box2d world
   void killBody() {
+    sensor = null;
     box2d.destroyBody(body);
+    //body = null;
   }
 
   void makeBody(Vec2 center, float _r) {
@@ -47,7 +55,7 @@ class Puller {
     fd.shape = circle;
 
     fd.filter.categoryBits = BIT_PULLER;
-    fd.filter.maskBits = BIT_BOUNDARY | BIT_SENSOR | BIT_PULLER;
+    fd.filter.maskBits = BIT_BOUNDARY | BIT_SENSOR | BIT_PULLER | BIT_PULLEE;
 
     // Parameters that affect physics
     fd.density = dens;
@@ -77,7 +85,6 @@ class Puller {
   void draw() {
 
     stroke(255);
-    fill(c);
     strokeWeight(1);
 
     // We look at each body and get its screen position
@@ -89,21 +96,34 @@ class Puller {
     pushMatrix();
     translate(_pos.x, _pos.y);
 
-    // force director - before rotating
-    stroke(255, 0, 255);    
-    strokeWeight(1);
-    //line(0, 0, force.x, -force.y);    
+    if (directionDraw) {
+      // force director - before rotating
+      stroke(255, 0, 255);    
+      strokeWeight(1);
+      line(0, 0, force.x, -force.y);
+    }
 
     // Circle
+    //if (sensor.numNeighbour() <= 0){
+    //  fill(n);
+    //} else {
+    //  fill(c);
+    //}
+
+    fill(n);
+    noFill();
+
     stroke(255);
-    strokeWeight(1);
-    noStroke();
+    strokeWeight(0.1);
+    //noStroke();
     rotate(-a);
     ellipse(0, 0, r, r);
 
     popMatrix();
 
-    //sensor.draw();
+    if (sensorDraw) {
+      sensor.draw();
+    }
   }
 
 

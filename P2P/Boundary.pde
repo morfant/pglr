@@ -33,7 +33,7 @@ class Boundary {
     FixtureDef fd = new FixtureDef();
     fd.shape = sd;
     fd.filter.categoryBits = BIT_BOUNDARY;
-    fd.filter.maskBits = BIT_PULLER;
+    fd.filter.maskBits = BIT_PULLER | BIT_PULLEE;
     
     // Create the body
     BodyDef bd = new BodyDef();

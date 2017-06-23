@@ -1,11 +1,17 @@
-class Pullee extends Puller {
+class Pullee {
 
-  //PVector pos = new PVector(0, 0, 0);
-  //PVector velocity = new PVector(0, 0, 0);
-  //float spd = 20.0;
-  //float force = 0.5;
+  boolean sensorDraw = false;
+  boolean directionDraw = false;
+  Body body;
+  Sensor sensor;
+  Vec2 pos = new Vec2(0, 0);
+  Vec2 velocity = new Vec2(0, 0);
+  Vec2 force = new Vec2(0, 0);
+  float velMul = 50.0;
   float r = 30;
-  color c = color(255, 205, 50, 140);
+  float dens = 0.4;
+  color n = color(255, 225, 5, 100);
+  color c = color(15, 25, 205, 100);
 
 
   Pullee() {
@@ -23,6 +29,53 @@ class Pullee extends Puller {
     body.setAngularVelocity(random(-5, 5));
   }
 
+  // This function removes the particle from the box2d world
+  void killBody() {
+    sensor = null;
+    box2d.destroyBody(body);
+    //body = null;
+  }
+
+  void makeBody(Vec2 center, float _r) {
+
+    // Define a polygon (this is what we use for a rectangle)
+    CircleShape circle = new CircleShape();
+    float r_toWorld = box2d.scalarPixelsToWorld(_r);
+    circle.m_radius = r_toWorld/2;
+
+
+    // Define a fixture
+    FixtureDef fd = new FixtureDef();
+    fd.shape = circle;
+
+    fd.filter.categoryBits = BIT_PULLEE;
+    fd.filter.maskBits = BIT_BOUNDARY | BIT_SENSOR | BIT_PULLEE | BIT_PULLER;
+
+    // Parameters that affect physics
+    fd.density = dens;
+    fd.friction = 0.001;
+    fd.restitution = 0.8;
+
+    // Define the body and make it from the shape
+    BodyDef bd = new BodyDef();
+    bd.type = BodyType.DYNAMIC;
+    bd.position.set(box2d.coordPixelsToWorld(center));
+
+    body = box2d.createBody(bd);
+    body.createFixture(fd);
+    body.setUserData(this);
+  }
+
+  void update() {
+
+    Vec2 body_pos = box2d.getBodyPixelCoord(body);
+    Vec2 _pos = new Vec2(body_pos.x, body_pos.y);
+    sensor.update(_pos);
+
+    forceFowardNeighbour();
+  }
+
+
   void forceFowardNeighbour() {
     Vec2 this_body_pos = body.getWorldCenter();
     //Vec2 force = new Vec2(0, 0);
@@ -33,7 +86,7 @@ class Pullee extends Puller {
         Vec2 f = p.body.getWorldCenter().sub(body.getWorldCenter());
         forceSum = PVector.add(forceSum, new PVector(f.x, f.y));
         //println("f: " + f);
-      } else if (o.getClass() == Puller.class){
+      } else if (o.getClass() == Puller.class) {
         Puller p = (Puller) o;
         Vec2 f = p.body.getWorldCenter().sub(body.getWorldCenter());
         forceSum = PVector.add(forceSum, new PVector(-f.x, -f.y));
@@ -70,12 +123,25 @@ class Pullee extends Puller {
     pushMatrix();
     translate(_pos.x, _pos.y);
 
-    // force director - before rotating
-    stroke(255, 0, 255);    
-    strokeWeight(1);
-    //line(0, 0, force.x, -force.y);    
+    if (directionDraw) {
+      // force director - before rotating
+      stroke(255, 0, 255);    
+      strokeWeight(1);
+      line(0, 0, force.x, -force.y);
+    }
 
     // Circle
+
+    // Circle
+
+    //if (sensor.numNeighbour() <= 0) {
+    //  fill(n);
+    //} else {
+    //  fill(c);
+    //}
+
+    fill(n);
+
     stroke(255);
     strokeWeight(1);
     noStroke();
@@ -84,6 +150,8 @@ class Pullee extends Puller {
 
     popMatrix();
 
-    //sensor.draw();
+    if (sensorDraw) {
+      sensor.draw();
+    }
   }
 };
