@@ -15,12 +15,16 @@ WaveCircle wc, wc2;
 
 int pad = 10;
 
+float velLondon = 1.0;
+float velSeoul = 1.0;
+
 enum DIRECTION {
     UP, DOWN;
 }
 
 void setup() {
-    size(1280, 900);
+    // size(1280, 900);
+    fullScreen();
     background(255);
       
     bufLondon = new FloatList();
@@ -42,8 +46,8 @@ void setup() {
     // Buffer Init
     // bufNumLondon = (width - (pad * 2))/velLondon
     // bufNumSeoul = (width - (pad * 2))/velSeoul
-    bufNumLondon = 360 * 1;
-    bufNumSeoul = 360 * 1;
+    bufNumLondon = 360 * 4;
+    bufNumSeoul = 360 * 4;
 
     baseYLondon = (height - (pad * 2)) / 3;
     // print(baseYLondon)
@@ -67,35 +71,89 @@ void draw() {
 
 
     // Update buffer
-    float newValue = amp.analyze();
-    float newValue2 = amp2.analyze();
+    float newValue = amp.analyze(); // input ch 1
+    float newValue2 = amp2.analyze(); // input ch 2
+    stroke(255, 0, 0);
     line(0, 100, newValue * 1000, 100);
+    stroke(0, 0, 255);
     line(0, 200, newValue2 * 1000, 200);
 
-    if (bufLondon.size() < bufNumLondon) {
-        bufLondon.append(newValue);
-    } else {
-        bufLondon.remove(0); // remove first element
-        bufLondon.append(newValue); // append to last index position
-        // print(bufLondon)
-    }
 
+    // ch 1
     if (bufSeoul.size() < bufNumSeoul) {
-        bufSeoul.append(newValue2);
+        bufSeoul.append(newValue);
     } else {
         bufSeoul.remove(0); // remove first element
-        bufSeoul.append(newValue2); // append to last index position
+        bufSeoul.append(newValue); // append to last index position
         // print(bufSeoul)
     }
 
+
+    // ch 2
+    if (bufLondon.size() < bufNumLondon) {
+        bufLondon.append(newValue2);
+    } else {
+        bufLondon.remove(0); // remove first element
+        bufLondon.append(newValue2); // append to last index position
+        // print(bufLondon)
+    }
+
     // println("len: " + bufLondon.size());
-    wc2.update(bufLondon);
-    wc2.direction(DIRECTION.UP);
-    wc2.draw();
 
     wc.update(bufSeoul);
     wc.direction(DIRECTION.UP);
     wc.draw();
+
+    wc2.update(bufLondon);
+    wc2.direction(DIRECTION.UP);
+    wc2.draw();
+
+    // Sound line
+    // for (int i = 0; i < bufNumLondon; i++) {
+    //     int w = width - pad;
+    //     int lenLondon = bufLondon.size();
+    //     int lenSeoul = bufSeoul.size();
+    //     if (lenLondon == 360 && lenSeoul == 360) {
+    //         fill(0);
+    //         ellipse(w - i/2, baseYLondon + bufLondon.get(lenLondon - 1 - i) * 1000 , 5, 5);
+
+    //         fill(10, 60, 120);
+    //         ellipse(pad + i/2, baseYSeoul + bufSeoul.get(lenSeoul - 1 - i) * 1000 , 5, 5);
+    //     }
+
+    // }
+
+
+    fill(0);
+    noFill();
+    strokeWeight(0.4);
+    stroke(0, 150);
+
+    int lenLondon = bufLondon.size();
+    int lenSeoul = bufSeoul.size();
+
+    if (lenLondon == bufNumLondon) {
+        beginShape();
+            for (int i = 0; i < bufNumLondon; i++) {
+                int w = width - pad;
+                vertex(w - (i * velLondon), baseYLondon + bufLondon.get(lenLondon - 1 - i) * 1000);
+            }
+        endShape();
+    }
+
+
+    fill(10, 80, 200);
+    noFill();
+    strokeWeight(0.4);
+    stroke(10, 80, 200);
+    if (lenSeoul == bufNumSeoul) {
+        beginShape();
+            for (int i = 0; i < bufNumSeoul; i++) {
+                int w = width - pad;
+                vertex(w - (i * velSeoul), baseYSeoul + bufSeoul.get(lenSeoul - 1 - i) * 1000);
+            }
+        endShape();
+    }
 
 }
 
