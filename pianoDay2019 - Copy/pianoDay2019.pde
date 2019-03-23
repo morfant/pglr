@@ -18,9 +18,6 @@ int pad = 10;
 float velLondon = 1.0;
 float velSeoul = 1.0;
 
-int count = 0;
-float rotRadius = 400;
-
 enum DIRECTION {
     UP, DOWN;
 }
@@ -49,18 +46,17 @@ void setup() {
     // Buffer Init
     // bufNumLondon = (width - (pad * 2))/velLondon
     // bufNumSeoul = (width - (pad * 2))/velSeoul
-    bufNumLondon = 420 * 1;
+    bufNumLondon = 360 * 4;
     bufNumSeoul = 360 * 4;
 
-    baseYLondon = height / 2 - 80;
-    // print(baseYLondon);
-    // baseYSeoul = baseYLondon * 2;
-    baseYSeoul = 353 * 2;
+    baseYLondon = (height - (pad * 2)) / 3;
+    // print(baseYLondon)
+    baseYSeoul = baseYLondon * 2;
 
 }      
 
 void draw() {
-    background(255, 0);
+    background(255);
     
     // Boundary
     stroke(0);
@@ -70,10 +66,8 @@ void draw() {
     line(pad, height - pad, pad, pad);
 
     // Center red line
-    stroke(255, 0, 0);
-    // strokeWeight(0.3);
-    float rh = width/2 + (noise(frameCount/40) - 0.5) * 100;
-    // line(rh, 0, rh, height);
+    // stroke(255, 0, 0);
+    // line(width/2, 0, width/2, height);
 
 
     // Update buffer
@@ -108,9 +102,12 @@ void draw() {
 
     wc.update(bufSeoul);
     wc.direction(DIRECTION.UP);
-    // wc.setPos(rotRadius *cos(radians(count)), rotRadius * sin(radians(count)));
     wc.draw();
-    count++;
+
+    wc2.update(bufLondon);
+    wc2.direction(DIRECTION.UP);
+    wc2.draw();
+
     // Sound line
     // for (int i = 0; i < bufNumLondon; i++) {
     //     int w = width - pad;
@@ -127,9 +124,9 @@ void draw() {
     // }
 
 
-    // fill(0);
+    fill(0);
     noFill();
-    // strokeWeight(0.4);
+    strokeWeight(0.4);
     stroke(0, 150);
 
     int lenLondon = bufLondon.size();
@@ -138,43 +135,25 @@ void draw() {
     if (lenLondon == bufNumLondon) {
         beginShape();
             for (int i = 0; i < bufNumLondon; i++) {
-                int w = width - pad; // <--
-                // int w = width - bufNumLondon; // -->
-                vertex(w - (i * velLondon), baseYLondon + bufLondon.get(lenLondon - 1 - i) * 3000); // <--
-                // vertex(w + (i * velLondon), baseYLondon + bufLondon.get(lenLondon - 1 - i) * 1000); // -->
+                int w = width - pad;
+                vertex(w - (i * velLondon), baseYLondon + bufLondon.get(lenLondon - 1 - i) * 1000);
             }
         endShape();
     }
-    fill(10);
-    rect(width*3/4, 0, width*1/4, height);
-
-    wc2.update(bufLondon);
-    wc2.direction(DIRECTION.UP);
-    // wc2.setPos(rotRadius *cos(radians(count)), rotRadius * sin(radians(count)));
-    wc2.draw();
 
 
-
-    // fill(10, 80, 200);
+    fill(10, 80, 200);
     noFill();
-    // strokeWeight(0.4);
+    strokeWeight(0.4);
     stroke(10, 80, 200);
-    push();
-    translate(width - bufNumSeoul, baseYSeoul);
-    rotate(radians(-5));
     if (lenSeoul == bufNumSeoul) {
         beginShape();
             for (int i = 0; i < bufNumSeoul; i++) {
-                // int w = width - pad;
-                // int w = width - bufNumSeoul;
-                int w = -bufNumSeoul;
-                // vertex(w - (i * velSeoul), baseYSeoul + bufSeoul.get(lenSeoul - 1 - i) * 1000);
-                // vertex(w + (i * velSeoul), baseYSeoul + bufSeoul.get(lenSeoul - 1 - i) * 3000);
-                vertex(0 + (i * velSeoul), 0 + bufSeoul.get(lenSeoul - 1 - i) * 3000);
+                int w = width - pad;
+                vertex(w - (i * velSeoul), baseYSeoul + bufSeoul.get(lenSeoul - 1 - i) * 1000);
             }
         endShape();
     }
-    pop();
 
 }
 

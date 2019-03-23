@@ -1,12 +1,11 @@
 class WaveCircle {
-    float posX, posY, r;
-    float movX, movY;
+    float x, y, r;
     DIRECTION ampDirectionFlag = DIRECTION.UP;
     FloatList buffer;
  
     WaveCircle(float _x, float _y, float _r) {
-        posX = _x;
-        posY = _y;
+        x = _x;
+        y = _y;
         r = _r;
         ampDirectionFlag = DIRECTION.UP;
     } 
@@ -19,11 +18,6 @@ class WaveCircle {
         ampDirectionFlag = _ampDirectionFlag;
     }
 
-    void setPos(float _x, float _y) {
-        movX = _x;
-        movY = _y;
-    }
-
     void draw() {
 
         // noFill()
@@ -33,9 +27,9 @@ class WaveCircle {
         // stroke(0, 150);
 
         push();
-        translate(posX + movX, posY + movY);
-        beginShape();
-        // beginShape(TRIANGLE_STRIP);
+        translate(x, y);
+        // beginShape();
+        beginShape(TRIANGLE_STRIP);
         int len = buffer.size();
         // println("len: " + len);
         // float d = 360 / len;
@@ -46,15 +40,15 @@ class WaveCircle {
             stroke(0, 150);
 
             for (int i = 0; i < 360; i++) {
-                float x = r * cos(radians(-i * 1));
-                float y = r * sin(radians(-i * 1));
+                float x = r * cos(radians(i * 1));
+                float y = r * sin(radians(i * 1));
                 if (ampDirectionFlag == DIRECTION.UP) {
                     float v = buffer.get(len - 1 - i);
-                    // if (v > 0.01) {
-                    //     fill(200, 10, 80, 120);
-                    // } else {
-                    //     fill(10, 80, 200);
-                    // }
+                    if (v > 0.01) {
+                        fill(200, 10, 80, 120);
+                    } else {
+                        fill(10, 80, 200);
+                    }
                     vertex(x, y - v * 5000);
                     // bezierVertex(x, y, x * 2, y * 2, 0, 0);
                     // curveVertex(x, y - buffer.get(len - 1 - i) * 5000);
