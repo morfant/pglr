@@ -11,7 +11,7 @@ import controlP5.*;
 ControlP5 cp5;
 
 int nPuller = 1000;
-int nPullee = 0;
+int nPullee = 10;
 
 float forceStrength = 2.0;
 float attraction_Puller = 1.0;
@@ -27,7 +27,8 @@ Box2DProcessing box2d;
 
 
 void setup() {
-  size(300, 400);
+  //size(300, 400);
+  size(900, 800);
   frameRate(30);
   smooth();
 

@@ -10,8 +10,8 @@ class Puller {
   float velMul = 50.0;
   float r = 5;
   float dens = 0.4;
-  //color n = color(155, 25, 5, 200);
-  color n = color(255, 250, 250, 150);
+  color n = color(155, 25, 5, 200);
+  //color n = color(255, 250, 250, 150);
   color c = color(155, 225, 15, 100);
 
   boolean inContact = false;

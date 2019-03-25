@@ -26,8 +26,8 @@ enum DIRECTION {
 }
 
 void setup() {
-    // size(1280, 900);
-    fullScreen();
+    size(1280, 900);
+    // fullScreen();
     background(255);
       
     bufLondon = new FloatList();
@@ -56,6 +56,8 @@ void setup() {
     // print(baseYLondon);
     // baseYSeoul = baseYLondon * 2;
     baseYSeoul = 353 * 2;
+
+    }
 
 }      
 
