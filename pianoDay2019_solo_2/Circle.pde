@@ -10,7 +10,7 @@ class Circle {
         posX = x;
         posY = y;
         radius = r;
-        vx = 1;
+        vx = 5;
         vy = 0;
     }
 

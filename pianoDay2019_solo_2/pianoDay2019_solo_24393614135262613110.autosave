@@ -33,8 +33,8 @@ enum DIRECTION {
 }
 
 void setup() {
-    // size(1280, 900);
-    fullScreen();
+    size(1280, 900);
+    // fullScreen();
     background(255);
       
     bufSeoul_1 = new FloatList();
@@ -156,7 +156,7 @@ void draw() {
     fill(255, 100);
     beginShape();
     stroke(255, 100);
-    strokeWeight(5);
+    strokeWeight(80);
     for (Circle c : circles) {
         PVector pos = c.getPos();
         vertex(pos.x, pos.y);
@@ -270,4 +270,3 @@ void draw() {
 //     bufSeoul_1.clear();
 //     println(bufNumSeoul_1);
 // }
-
