@@ -1,3 +1,5 @@
+
+import java.io.*;
 import processing.sound.*;
 Amplitude amp, amp2;
 AudioIn in, in2;
@@ -9,7 +11,7 @@ int bands = 512;
 float[] spectrum = new float[bands];
 int pitchInterval = 0;
 boolean pitchGrabbed = false;
-float pitch = 0;
+int pitch = 0;
 
 int bufNumSeoul_1 = 0;
 int bufNumSeoul_2 = 0;
@@ -32,9 +34,15 @@ enum DIRECTION {
     UP, DOWN, CW, CCW;
 }
 
+Writer writer_1;
+
+
+
+ArrayList<Circle> loadedCircles;
+
 void setup() {
-    // size(1280, 900);
-    fullScreen();
+    size(1280, 900);
+    // fullScreen();
     background(255);
       
     bufSeoul_1 = new FloatList();
@@ -67,6 +75,8 @@ void setup() {
 
     frame.setLocation(0, 0);
 
+    writer_1 = new Writer(width - pad, pad);
+
 }      
 
 void draw() {
@@ -88,7 +98,7 @@ void draw() {
     }
 
     // print(maxVal);
-    println(maxValIdx);
+    // println(maxValIdx);
     // println(spectrum.length);
 
     // colorMode(HSB, 360, 100, 100);
@@ -142,9 +152,12 @@ void draw() {
         circles.add(new Circle(width/2, baseYSeoul_1 - pitch * 10, 500 * newValue));
         // circles.add(new Circle(width/2, baseYSeoul_1 - pitch * 10, 50));
 
+        writer_1.data(newValue, pitch);
+
         pitchInterval++;
 
     }
+
 
 
     for (Circle c : circles) {
@@ -263,11 +276,63 @@ void draw() {
         line( i, height, i, height - spectrum[i]*height*5 );
     } 
 
+
+    writer_1.update();
+    writer_1.draw();
+
 }
 
 // void mouseClicked() {
-//     bufNumSeoul_1 = (int)random(180, 480);
-//     bufSeoul_1.clear();
-//     println(bufNumSeoul_1);
+    // bufNumSeoul_1 = (int)random(180, 480);
+    // bufSeoul_1.clear();
+    // println(bufNumSeoul_1);
+
+//     ArrayList<Circle> cs = writer_1.getData();
+//     saveModel("C:/Users/morfa/Documents/pglr/pianoDay2019_solo_2/test.bin", cs);
+//     println("save file()");
 // }
 
+// void keyPressed() {
+//     loadedCircles = null;
+//   if (key == CODED) {
+//     if (keyCode == UP) {
+//         loadedCircles = loadModel("C:/Users/morfa/Documents/pglr/pianoDay2019_solo_2/test.bin");
+
+//     } else if (keyCode == DOWN) {
+//         if (loadedCircles != null) {
+//             println(loadedCircles.size());
+//         } else {
+//             println("loadedCircles is null");
+//         }
+//     } 
+//   } else {
+//   }
+// }
+
+public void saveModel(String fileName, ArrayList<Circle> circles){
+    try {
+        // File file = new File(getFilesDir(), fileName);
+        FileOutputStream fos = new FileOutputStream(fileName);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(circles);
+        fos.close();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+
+public ArrayList<Circle> loadModel(String fileName){
+    ArrayList<Circle> circles = null;
+    try {
+        FileInputStream fis = new FileInputStream(fileName);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        circles = (ArrayList<Circle>) ois.readObject();
+        fis.close();
+    } catch (IOException e) {
+        e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+    }
+    return circles;
+}

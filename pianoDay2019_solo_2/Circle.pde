@@ -1,8 +1,13 @@
-class Circle {
+import java.io.Serializable;
+
+class Circle implements Serializable {
     float posX, posY;
     float vx, vy;
     float radius;
-    color fillCol = color(10, 180, 80);
+    // color fillCol = color(10, 180, 80);
+    int red = 10;
+    int green = 180;
+    int blue = 80;
     boolean isDead = false;
     
 
@@ -31,7 +36,7 @@ class Circle {
     }
 
     void draw() {
-        fill(fillCol);
+        fill(red, green, blue);
         // noFill();
         strokeWeight(0.5);
         ellipse(posX, posY, radius, radius);
