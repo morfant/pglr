@@ -5,7 +5,7 @@ class WaveCircle {
     color strkCol = color(0);
     float strkWeight = 0.4;
     float vel = 1.0;
-    float[] fftBuffer = new float[512];
+    float[] fftBuffer = new float[16];
 
     DIRECTION ampDirectionFlag = DIRECTION.UP;
     DIRECTION ampRotationFlag = DIRECTION.CW;
