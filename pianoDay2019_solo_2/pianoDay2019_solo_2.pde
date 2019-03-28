@@ -5,13 +5,18 @@ Amplitude amp, amp2;
 AudioIn in, in2;
 
 ArrayList<Circle> circles = new ArrayList<Circle>();
+ArrayList<Circle> circlesEcho = new ArrayList<Circle>();
 boolean frameMoved = false;
-FFT fft;
+FFT fft, fft2;
 int bands = 512;
 float[] spectrum = new float[bands];
+float[] spectrum2 = new float[bands];
 int pitchInterval = 0;
+int pitchInterval2 = 0;
 boolean pitchGrabbed = false;
+boolean pitchGrabbed2 = false;
 int pitch = 0;
+int pitch2 = 0;
 
 int bufNumSeoul_1 = 0;
 int bufNumSeoul_2 = 0;
@@ -34,14 +39,15 @@ enum DIRECTION {
     UP, DOWN, CW, CCW;
 }
 
-Writer writer_1;
+Writer writer_1, writer_2;
 
 
 
 ArrayList<Circle> loadedCircles;
 
 void setup() {
-    size(1280, 900);
+    // size(1280, 900);
+    size(1920, 1080);
     // fullScreen();
     background(255);
       
@@ -50,7 +56,7 @@ void setup() {
     bufNumSeoul_1 = 100;
     bufNumSeoul_2 = width/2;
 
-    wc = new WaveCircle(width*1/2, height/2, 300, bufNumSeoul_1);
+    // wc = new WaveCircle(width*1/2, height/2, 300, bufNumSeoul_1);
     // wc2 = new WaveCircle(width*1/2, height/2, 300, bufNumSeoul_2);
 
     // Create an Input stream which is routed into the Amplitude analyzer
@@ -66,6 +72,9 @@ void setup() {
     fft = new FFT(this, bands);
     fft.input(in);
 
+    fft2 = new FFT(this, bands);
+    fft2.input(in2);
+
     // Buffer Init
     // bufNumLondon = (width - (pad * 2))/velLondon
     // bufNumSeoul = (width - (pad * 2))/velSeoul
@@ -75,7 +84,10 @@ void setup() {
 
     frame.setLocation(0, 0);
 
-    writer_1 = new Writer(width - pad, pad);
+    writer_1 = new Writer(width - pad*2, pad);
+    writer_1.setFillColor(10, 180, 80, 255);
+    writer_2 = new Writer(width/2, pad);
+    writer_2.setFillColor(128, 0, 255, 255);
 
 }      
 
@@ -87,22 +99,15 @@ void draw() {
     background(255);
     
     fft.analyze(spectrum);
+    fft2.analyze(spectrum2);
 
-    float maxVal = 0;
-    int maxValIdx = 0;
-    for (int i = 0; i < spectrum.length; i++) {
-        if (spectrum[i] > maxVal) {
-            maxVal = spectrum[i];
-            maxValIdx = i;
-        }
-    }
+    int pitchIdx = getMaxValIdx(spectrum);
+    int pitchIdx2 = getMaxValIdx(spectrum2);
 
-    // print(maxVal);
-    // println(maxValIdx);
-    // println(spectrum.length);
-
+    println(pitchIdx);
+    println(pitchIdx2);
     // colorMode(HSB, 360, 100, 100);
-    float vc = (float)maxValIdx/(float)spectrum.length * 360.0;
+    // float vc = (float)maxValIdx/(float)spectrum.length * 360.0;
     // println(vc);
     // fill(220 + vc, 100, 100);
     // rect(0, 0, 100, 100);
@@ -132,12 +137,11 @@ void draw() {
     line(0, 200, newValue2 * 1000, 200);
 
 
-
+    // circles 1
     if (newValue > 0.05) {
-        rect(width/2, height/2, 100, 100);
 
         if (pitchGrabbed == false) {
-            pitch = maxValIdx;
+            pitch = pitchIdx;
             pitchGrabbed = true;
             pitchInterval = 0;
         }
@@ -147,18 +151,15 @@ void draw() {
             pitchInterval = 0;
         }
 
-
         float v = newValue;
-        circles.add(new Circle(width/2, baseYSeoul_1 - pitch * 10, 500 * newValue));
-        // circles.add(new Circle(width/2, baseYSeoul_1 - pitch * 10, 50));
+        Circle c = new Circle(width/2, baseYSeoul_1 - pitch * 10, 500 * v, true, true, pad);
+        c.setFillColor(10, 180, 80, 200);
+        c.setStrokeColor(0, 0, 255, 200);
+        circles.add(c);
 
-        writer_1.data(newValue, pitch);
-
+        writer_1.data(v, pitch);
         pitchInterval++;
-
     }
-
-
 
     for (Circle c : circles) {
         c.update();
@@ -176,14 +177,62 @@ void draw() {
     } 
     endShape(CLOSE);
 
-
-
     for (int i = circles.size() - 1; i >= 0; i--) {
         Circle c = circles.get(i);
         if (c.isDead() == true) {
             circles.remove(i);
         }
     }
+
+    // circlesEcho
+    if (newValue2 > 0.05) {
+
+        if (pitchGrabbed2 == false) {
+            pitch2 = pitchIdx2;
+            pitchGrabbed2 = true;
+            pitchInterval2 = 0;
+        }
+
+        if (pitchInterval2 > 10) {
+            pitchGrabbed2 = false;
+            pitchInterval2 = 0;
+        }
+
+        float v = newValue2;
+        Circle c = new Circle(width - pad, baseYSeoul_1 - pitch2 * 10, 500 * newValue2, true, true, width/2);
+        c.setFillColor(128, 0, 255, 80);
+        c.setStrokeColor(255, 155, 155, 80);
+        circlesEcho.add(c);
+        // circles.add(new Circle(width/2, baseYSeoul_1 - pitch * 10, 50));
+
+        writer_2.data(newValue2, pitch);
+        pitchInterval2++;
+    }
+
+    for (Circle c : circlesEcho) {
+        c.update();
+        c.draw();
+    } 
+
+    // noFill();
+    fill(255, 100);
+    beginShape();
+    stroke(255, 100);
+    strokeWeight(5);
+    for (Circle c : circlesEcho) {
+        PVector pos = c.getPos();
+        vertex(pos.x, pos.y);
+    } 
+    endShape(CLOSE);
+
+    for (int i = circlesEcho.size() - 1; i >= 0; i--) {
+        Circle c = circlesEcho.get(i);
+        if (c.isDead() == true) {
+            circlesEcho.remove(i);
+        }
+    }
+
+
 
 
     // ch 1
@@ -226,34 +275,6 @@ void draw() {
     // wc2.draw();
 
 
-
-    // horizontal lines
-    fill(0);
-    noFill();
-    strokeWeight(0.4);
-    stroke(0, 150);
-
-    int lenSeoul_1 = bufSeoul_1.size();
-    int lenSeoul_2 = bufSeoul_2.size();
-
-    if (lenSeoul_1 == bufNumSeoul_1) {
-        // beginShape();
-            for (int i = 0; i < bufNumSeoul_1; i++) {
-                int w = width/2;
-                // vertex(w - (i * velSeoul_1), baseYSeoul_1 - bufSeoul_1.get(lenSeoul_1 - 1 - i) * 1000);
-
-                float v = bufSeoul_1.get(lenSeoul_1 - 1 - i);
-                float pitch = maxValIdx;
-                if (bufSeoul_1.get(lenSeoul_1 - 1 - i) > 0.01) {
-                    // Circle c = new Circle(w - (i * velSeoul_1), pitch * 10 + baseYSeoul_1, 500 * v);
-                    // circles.add(new Circle(w - (i * velSeoul_1), pitch * 10 + baseYSeoul_1, 500 * v));
-                    // ellipse(w - (i * velSeoul_1), 100 + baseYSeoul_1, 500 * v , 500 * v);
-                }
-            }
-        // endShape();
-    }
-
-
     // fill(10, 80, 200);
     // noFill();
     // strokeWeight(0.4);
@@ -279,6 +300,9 @@ void draw() {
 
     writer_1.update();
     writer_1.draw();
+
+    writer_2.update();
+    writer_2.draw();
 
 }
 
@@ -308,6 +332,19 @@ void draw() {
 //   } else {
 //   }
 // }
+
+int getMaxValIdx(float[] fArr) {
+    float maxVal = 0;
+    int maxValIdx = 0;
+    for (int i = 0; i < fArr.length; i++) {
+        if (fArr[i] > maxVal) {
+            maxVal = fArr[i];
+            maxValIdx = i;
+        }
+    }
+
+    return maxValIdx;
+}
 
 public void saveModel(String fileName, ArrayList<Circle> circles){
     try {

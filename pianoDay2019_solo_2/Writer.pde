@@ -7,11 +7,19 @@ class Writer {
     float barVx, barVy;
     float barSpeed;
     float oneRowHeight;
-    int numRow = 8;
+    int numRow = 30;
 
     float radius = 10;
-    color fillCol = color(10, 180, 80);
-    // color strkCol = color(0);
+
+    int red = 10;
+    int green = 180;
+    int blue = 80;
+    int alpha = 255;
+
+    int red_strk = 0;
+    int green_strk = 0;
+    int blue_strk = 0;
+    int alpha_strk = 255;
 
     float amp = 0.0;
     int pitchIdx = 0;
@@ -23,11 +31,25 @@ class Writer {
         posY = y;
         barVx = 1;
         barVy = 0;
-        pageWidth = width/2;
-        pageHeight = height;
+        pageWidth = width/2 - pad;
+        pageHeight = height - pad * 2;
         oneRowHeight = pageHeight/numRow;
         barPosX = posX - 0; // start from top right
-        barPosY = oneRowHeight/2;
+        barPosY = pad + oneRowHeight/2;
+    }
+
+    void setFillColor(int r, int g, int b, int a) {
+        red = r;
+        green = g;
+        blue = b;
+        alpha = a;
+    }
+
+    void setStrokeColor(int r, int g, int b, int a) {
+        red_strk = r;
+        green_strk = g;
+        blue_strk = b;
+        alpha_strk = a;
     }
 
     void update() {
@@ -39,15 +61,20 @@ class Writer {
             barPosXDiff = 0;
         }
 
-        fill(255, 0, 0, 50);
-        ellipse(barPosX, barPosY, 10, 10);
+        // fill(255, 0, 0, 50);
+        // ellipse(barPosX, barPosY, 10, 10);
     }
 
     void data(float _amp, int _pitchIdx) {
         amp = _amp;
         pitchIdx = _pitchIdx;
-        circles.add(new Circle(barPosX, barPosY -pitchIdx * 10, 500 * amp));
+        Circle c = new Circle(barPosX, barPosY -pitchIdx, oneRowHeight*3/4 * amp, true, false, -width);
+        c.setFillColor(red, green, blue, alpha);
+        c.setStrokeColor(red_strk, green_strk, blue_strk, alpha_strk);
+        circles.add(c);
     }
+
+
 
     ArrayList<Circle> getData() {
         return circles;
