@@ -3,6 +3,10 @@ import java.io.*;
 import processing.sound.*;
 Amplitude amp, amp2;
 AudioIn in, in2;
+float ampThr1 = 0.005;
+float ampThr2 = 0.01;
+float mulAmp1 = 9000;
+float mulAmp2 = 5500;
 
 ArrayList<Circle> circles = new ArrayList<Circle>();
 ArrayList<Circle> circlesEcho = new ArrayList<Circle>();
@@ -47,8 +51,8 @@ ArrayList<Circle> loadedCircles;
 
 void setup() {
     // size(1280, 900);
-    size(1920, 1080);
-    // fullScreen();
+    //size(1920, 1080);
+    fullScreen();
     background(255);
       
     bufSeoul_1 = new FloatList();
@@ -138,7 +142,7 @@ void draw() {
 
 
     // circles 1
-    if (newValue > 0.05) {
+    if (newValue > ampThr1) {
 
         if (pitchGrabbed == false) {
             pitch = pitchIdx;
@@ -152,7 +156,7 @@ void draw() {
         }
 
         float v = newValue;
-        Circle c = new Circle(width/2, baseYSeoul_1 - pitch * 10, 500 * v, true, true, pad);
+        Circle c = new Circle(width/2, baseYSeoul_1 - pitch * 10, mulAmp1 * v, true, true, pad);
         c.setFillColor(10, 180, 80, 200);
         c.setStrokeColor(0, 0, 255, 200);
         circles.add(c);
@@ -185,7 +189,7 @@ void draw() {
     }
 
     // circlesEcho
-    if (newValue2 > 0.05) {
+    if (newValue2 > ampThr2) {
 
         if (pitchGrabbed2 == false) {
             pitch2 = pitchIdx2;
@@ -199,7 +203,7 @@ void draw() {
         }
 
         float v = newValue2;
-        Circle c = new Circle(width - pad, baseYSeoul_1 - pitch2 * 10, 500 * newValue2, true, true, width/2);
+        Circle c = new Circle(width - pad, baseYSeoul_1 - pitch2 * 10, mulAmp2 * newValue2, true, true, width/2);
         c.setFillColor(128, 0, 255, 80);
         c.setStrokeColor(255, 155, 155, 80);
         circlesEcho.add(c);

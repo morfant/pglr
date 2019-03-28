@@ -7,7 +7,7 @@ class Writer {
     float barVx, barVy;
     float barSpeed;
     float oneRowHeight;
-    int numRow = 30;
+    int numRow = 20;
 
     float radius = 10;
 
@@ -24,12 +24,14 @@ class Writer {
     float amp = 0.0;
     int pitchIdx = 0;
 
+    float ampMul = 30;
+
     ArrayList<Circle> circles = new ArrayList<Circle>();
 
     Writer(float x, float y) {
         posX = x;
         posY = y;
-        barVx = 1;
+        barVx = 5;
         barVy = 0;
         pageWidth = width/2 - pad;
         pageHeight = height - pad * 2;
@@ -68,7 +70,7 @@ class Writer {
     void data(float _amp, int _pitchIdx) {
         amp = _amp;
         pitchIdx = _pitchIdx;
-        Circle c = new Circle(barPosX, barPosY -pitchIdx, oneRowHeight*3/4 * amp, true, false, -width);
+        Circle c = new Circle(barPosX, barPosY -pitchIdx, oneRowHeight*3/4 * amp * ampMul, true, false, -width);
         c.setFillColor(red, green, blue, alpha);
         c.setStrokeColor(red_strk, green_strk, blue_strk, alpha_strk);
         circles.add(c);
