@@ -6,17 +6,19 @@ Amplitude amp, amp2;
 AudioIn in, in2;
 
 float ampThr1 = 0.005;
-float ampThr2 = 0.01;
+float ampThr2 = 0.005;
 
 // in jeokdo
-// float mulAmp1 = 9000;
-// float mulAmp2 = 5500;
+float mulAmp1 = 4600;
+float mulAmp2 = 4600;
 
-float mulAmp1 = 300;
-float mulAmp2 = 200;
+// in test
+// float mulAmp1 = 300;
+// float mulAmp2 = 200;
 
-float writerAmpMul1 = 3;
-float writerAmpMul2 = 3;
+
+float writerAmpMul1 = 38;
+float writerAmpMul2 = 38;
 
 ArrayList<Circle> circles = new ArrayList<Circle>();
 ArrayList<Circle> circlesEcho = new ArrayList<Circle>();
@@ -43,9 +45,9 @@ int g1 = 80;
 int b1 = 200;
 int a1 = 200;
 
-int r2 = 200;
+int r2 = 190;
 int g2 = 200;
-int b2 = 200;
+int b2 = 190;
 int a2 = 80;
 
 // to save writing as a file
@@ -53,8 +55,8 @@ int a2 = 80;
 
 void setup() {
     // size(1280, 900);
-    size(1920, 1080);
-    // fullScreen();
+    // size(1920, 1080);
+    fullScreen();
     background(255);
       
     // Create an Input stream which is routed into the Amplitude analyzer
@@ -105,11 +107,11 @@ void draw() {
     // rect(0, 0, width, height);
 
     // Boundary
-    stroke(0);
-    line(pad, pad, width - pad, pad);
-    line(width - pad, pad, width - pad, height - pad);
-    line(width - pad, height - pad, pad, height - pad);
-    line(pad, height - pad, pad, pad);
+    // stroke(0);
+    // line(pad, pad, width - pad, pad);
+    // line(width - pad, pad, width - pad, height - pad);
+    // line(width - pad, height - pad, pad, height - pad);
+    // line(pad, height - pad, pad, pad);
 
     // Center red line
     // stroke(255, 0, 0);
@@ -143,6 +145,7 @@ void draw() {
 
         float v = newValue;
         Circle c = new Circle(width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad, false);
+        c.setStrokeWeight(2.0);
         // green
         // c.setFillColor(10, 180, 80, 200);
         // c.setStrokeColor(0, 0, 255, 200);
@@ -200,14 +203,15 @@ void draw() {
 
         float v = newValue2;
         Circle c = new Circle(width - pad, baseLineY - pitch2 * 10, mulAmp2 * newValue2, true, true, width/2, false);
+        c.setStrokeWeight(0.3);
         // purple
         // c.setFillColor(128, 0, 255, 80);
         // c.setStrokeColor(255, 155, 155, 80);
 
         // gray
-        c.setFillColor(r2, g2, b2, 10);
+        c.setFillColor(r2, g2, b2, 70);
         c.setStrokeColor(r2/2, g2/2, b2/2, 140);
-        float vd = constrain(width/2 * ((float)frameCount/(1800*20)), 0, width/2 + 200);
+        float vd = constrain(width/2 * ((float)frameCount/(1800*25)), 0, width/2 + 200);
         // println(vd);
         c.setDeadLine(width/2 - vd);
         circlesEcho.add(c);

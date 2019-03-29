@@ -32,7 +32,7 @@ class Writer {
     Writer(float x, float y, float _ampMul) {
         posX = x;
         posY = y;
-        barVx = 4;
+        barVx = 5;
         barVy = 0;
         pageWidth = width/2 - pad;
         pageHeight = height - pad * 2;

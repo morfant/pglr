@@ -3,7 +3,7 @@ class WaveCircle {
     float movX, movY;
     DIRECTION ampDirectionFlag = DIRECTION.UP;
     FloatList buffer;
-    float ampMul = 200;
+    float ampMul = 2000;
  
     WaveCircle(float _x, float _y, float _r) {
         posX = _x;

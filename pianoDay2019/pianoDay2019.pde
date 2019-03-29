@@ -10,9 +10,9 @@ FloatList bufSeoul;
 int baseYLondon = 0;
 int baseYSeoul = 0;
 
-
-float ampMulLondon = 100;
-float ampMulSeoul = 100;
+// for horizontal wave line
+float ampMulLondon = 800;
+float ampMulSeoul = 1000;
 
 WaveCircle wc, wc2;
 
@@ -35,8 +35,8 @@ enum DIRECTION {
 
 void setup() {
     // size(1280, 900);
-    size(1920, 1080);
-    // fullScreen();
+    //size(1920, 1080);
+    fullScreen();
     background(255);
       
     bufLondon = new FloatList();
@@ -73,12 +73,12 @@ void draw() {
     background(255, 0);
     
     // Boundary
-    stroke(0);
-    strokeWeight(1);
-    line(pad, pad, width - pad, pad);
-    line(width - pad, pad, width - pad, height - pad);
-    line(width - pad, height - pad, pad, height - pad);
-    line(pad, height - pad, pad, pad);
+    // stroke(0);
+    // strokeWeight(1);
+    // line(pad, pad, width - pad, pad);
+    // line(width - pad, pad, width - pad, height - pad);
+    // line(width - pad, height - pad, pad, height - pad);
+    // line(pad, height - pad, pad, pad);
 
 
     // Center red line
@@ -210,4 +210,3 @@ void draw() {
     pop();
 
 }
-

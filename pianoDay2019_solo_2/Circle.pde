@@ -20,6 +20,8 @@ class Circle implements Serializable {
     boolean withRect = false;
 
     float deadLineX = 0;
+
+    float strokeWeight = 2;
     
 
     Circle(float x, float y, float r, boolean _isFill, boolean _isStroke, float _deadlineX, boolean _withRect) {
@@ -67,12 +69,17 @@ class Circle implements Serializable {
     void setDeadLine(float _deadLineX) {
         deadLineX = _deadLineX;
     }
+
+    void setStrokeWeight(float _strokeWeight) {
+        strokeWeight = _strokeWeight;
+    }
  
 
     void draw() {
         fill(red, green, blue, alpha);
         stroke(red_strk, green_strk, blue_strk, alpha_strk);
-        strokeWeight(0.5);
+        strokeWeight(strokeWeight);
+        // strokeWeight(2);
 
         if (isFill == false) {
             noFill();
