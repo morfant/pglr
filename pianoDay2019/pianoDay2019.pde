@@ -10,6 +10,10 @@ FloatList bufSeoul;
 int baseYLondon = 0;
 int baseYSeoul = 0;
 
+
+float ampMulLondon = 100;
+float ampMulSeoul = 100;
+
 WaveCircle wc, wc2;
 
 
@@ -21,12 +25,17 @@ float velSeoul = 1.0;
 int count = 0;
 float rotRadius = 400;
 
+float nightMovX = 0;
+float pointPosX = 0;
+float pointPosY = 0;
+
 enum DIRECTION {
     UP, DOWN;
 }
 
 void setup() {
-    size(1280, 900);
+    // size(1280, 900);
+    size(1920, 1080);
     // fullScreen();
     background(255);
       
@@ -57,7 +66,6 @@ void setup() {
     // baseYSeoul = baseYLondon * 2;
     baseYSeoul = 353 * 2;
 
-    }
 
 }      
 
@@ -66,10 +74,12 @@ void draw() {
     
     // Boundary
     stroke(0);
+    strokeWeight(1);
     line(pad, pad, width - pad, pad);
     line(width - pad, pad, width - pad, height - pad);
     line(width - pad, height - pad, pad, height - pad);
     line(pad, height - pad, pad, pad);
+
 
     // Center red line
     stroke(255, 0, 0);
@@ -81,10 +91,29 @@ void draw() {
     // Update buffer
     float newValue = amp.analyze(); // input ch 1
     float newValue2 = amp2.analyze(); // input ch 2
-    stroke(255, 0, 0);
-    line(0, 100, newValue * 1000, 100);
-    stroke(0, 0, 255);
-    line(0, 200, newValue2 * 1000, 200);
+
+
+    // night rect
+    fill(20, 50 - (newValue * 50));
+    // stroke(20, 200 - (newValue * 50));
+    strokeWeight(5);
+    // noStroke();
+    // noFill();
+    // rect(pad + nightMovX, pad, width/2 - pad, height - pad*2);
+    // line(width/2 + nightMovX, pad, width/2 + nightMovX, height-pad);
+    noStroke();
+    triangle((float)width/2 + nightMovX, (float)pad, (float)width/2 - nightMovX, (float)height - (float)pad, (float)width/2 + nightMovX + pointPosX, (float)height*2/5 + pointPosY);
+    nightMovX+=0.01;
+    pointPosX = sin(frameCount/10000) * 20;
+    pointPosY = cos(frameCount/1000) * 500;
+    println(nightMovX);
+
+
+    // Amp input test lines
+    // stroke(255, 0, 0);
+    // line(0, 100, newValue * 1000, 100);
+    // stroke(0, 0, 255);
+    // line(0, 200, newValue2 * 1000, 200);
 
 
     // ch 1
@@ -133,6 +162,7 @@ void draw() {
     noFill();
     // strokeWeight(0.4);
     stroke(0, 150);
+    strokeWeight(1);
 
     int lenLondon = bufLondon.size();
     int lenSeoul = bufSeoul.size();
@@ -142,13 +172,14 @@ void draw() {
             for (int i = 0; i < bufNumLondon; i++) {
                 int w = width - pad; // <--
                 // int w = width - bufNumLondon; // -->
-                vertex(w - (i * velLondon), baseYLondon + bufLondon.get(lenLondon - 1 - i) * 3000); // <--
+                vertex(w - (i * velLondon), baseYLondon + bufLondon.get(lenLondon - 1 - i) * ampMulLondon); // <--
                 // vertex(w + (i * velLondon), baseYLondon + bufLondon.get(lenLondon - 1 - i) * 1000); // -->
             }
         endShape();
     }
-    fill(10);
-    rect(width*3/4, 0, width*1/4, height);
+
+    // fill(10);
+    // rect(width*3/4, 0, width*1/4, height);
 
     wc2.update(bufLondon);
     wc2.direction(DIRECTION.UP);
@@ -159,7 +190,7 @@ void draw() {
 
     // fill(10, 80, 200);
     noFill();
-    // strokeWeight(0.4);
+    strokeWeight(1);
     stroke(10, 80, 200);
     push();
     translate(width - bufNumSeoul, baseYSeoul);
@@ -172,7 +203,7 @@ void draw() {
                 int w = -bufNumSeoul;
                 // vertex(w - (i * velSeoul), baseYSeoul + bufSeoul.get(lenSeoul - 1 - i) * 1000);
                 // vertex(w + (i * velSeoul), baseYSeoul + bufSeoul.get(lenSeoul - 1 - i) * 3000);
-                vertex(0 + (i * velSeoul), 0 + bufSeoul.get(lenSeoul - 1 - i) * 3000);
+                vertex(0 + (i * velSeoul), 0 + bufSeoul.get(lenSeoul - 1 - i) * ampMulSeoul);
             }
         endShape();
     }
