@@ -63,6 +63,10 @@ class Circle implements Serializable {
         blue_strk = b;
         alpha_strk = a;
     }
+
+    void setDeadLine(float _deadLineX) {
+        deadLineX = _deadLineX;
+    }
  
 
     void draw() {

@@ -77,7 +77,7 @@ void setup() {
     baseLineY = height/2 + 300;
 
     writer_1 = new Writer(width - pad*2, pad, writerAmpMul1);
-    writer_1.setFillColor(r1, g1, b1, a1);
+    writer_1.setFillColor(r1, g1, b1, a1/3);
     writer_2 = new Writer(width/2, pad, writerAmpMul2);
     writer_2.setFillColor(r2, g2, b2, a2);
 
@@ -207,6 +207,9 @@ void draw() {
         // gray
         c.setFillColor(r2, g2, b2, 10);
         c.setStrokeColor(r2/2, g2/2, b2/2, 140);
+        float vd = constrain(width/2 * ((float)frameCount/(1800*20)), 0, width/2 + 200);
+        // println(vd);
+        c.setDeadLine(width/2 - vd);
         circlesEcho.add(c);
 
         writer_2.data(newValue2, pitch);
@@ -239,6 +242,7 @@ void draw() {
 
     writer_2.update();
     writer_2.draw();
+
 
 }
 

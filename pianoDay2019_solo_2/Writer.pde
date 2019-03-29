@@ -27,11 +27,12 @@ class Writer {
     float ampMul = 10;
 
     ArrayList<Circle> circles = new ArrayList<Circle>();
+    int circleLimitNum = 4000;
 
     Writer(float x, float y, float _ampMul) {
         posX = x;
         posY = y;
-        barVx = 5;
+        barVx = 4;
         barVy = 0;
         pageWidth = width/2 - pad;
         pageHeight = height - pad * 2;
@@ -62,6 +63,9 @@ class Writer {
             barPosY += oneRowHeight;
             barPosX = posX - 0;
             barPosXDiff = 0;
+            if (barPosY > height) {
+                barPosY = pad + oneRowHeight/2;
+            }
         }
 
         // fill(255, 0, 0, 50);
@@ -75,6 +79,10 @@ class Writer {
         c.setFillColor(red, green, blue, alpha);
         c.setStrokeColor(red_strk, green_strk, blue_strk, alpha_strk);
         circles.add(c);
+
+        if (circles.size() >= circleLimitNum) {
+            circles.remove(0);
+        }
     }
 
 
