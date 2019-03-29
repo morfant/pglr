@@ -17,11 +17,12 @@ class Circle implements Serializable {
     boolean isDead = false;
     boolean isFill = true;
     boolean isStroke = true;
+    boolean withRect = false;
 
     float deadLineX = 0;
     
 
-    Circle(float x, float y, float r, boolean _isFill, boolean _isStroke, float _deadlineX) {
+    Circle(float x, float y, float r, boolean _isFill, boolean _isStroke, float _deadlineX, boolean _withRect) {
         posX = x;
         posY = y;
         radius = r;
@@ -30,6 +31,7 @@ class Circle implements Serializable {
         isFill = _isFill;
         isStroke = _isStroke;
         deadLineX = _deadlineX;
+        withRect = _withRect;
     }
 
     void update() {
@@ -73,6 +75,15 @@ class Circle implements Serializable {
         }
         if (isStroke == false) {
             noStroke();
+        }
+        if (withRect) {
+            rectMode(CENTER);
+            fill(0);
+            rect(posX, posY, radius, radius);
+        }
+
+        if (withRect) {
+            fill(255);
         }
         ellipse(posX, posY, radius, radius);
     }

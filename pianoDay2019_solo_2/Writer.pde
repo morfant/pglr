@@ -24,11 +24,11 @@ class Writer {
     float amp = 0.0;
     int pitchIdx = 0;
 
-    float ampMul = 30;
+    float ampMul = 10;
 
     ArrayList<Circle> circles = new ArrayList<Circle>();
 
-    Writer(float x, float y) {
+    Writer(float x, float y, float _ampMul) {
         posX = x;
         posY = y;
         barVx = 5;
@@ -38,6 +38,7 @@ class Writer {
         oneRowHeight = pageHeight/numRow;
         barPosX = posX - 0; // start from top right
         barPosY = pad + oneRowHeight/2;
+        ampMul = _ampMul;
     }
 
     void setFillColor(int r, int g, int b, int a) {
@@ -70,13 +71,22 @@ class Writer {
     void data(float _amp, int _pitchIdx) {
         amp = _amp;
         pitchIdx = _pitchIdx;
-        Circle c = new Circle(barPosX, barPosY -pitchIdx, oneRowHeight*3/4 * amp * ampMul, true, false, -width);
+        Circle c = new Circle(barPosX, barPosY -pitchIdx, oneRowHeight*3/4 * amp * ampMul, true, false, -width, false);
         c.setFillColor(red, green, blue, alpha);
         c.setStrokeColor(red_strk, green_strk, blue_strk, alpha_strk);
         circles.add(c);
     }
 
 
+    void reset() {
+        for (int i = circles.size() - 1; i >= 0; i--) {
+            circles.remove(i);
+        }
+
+        barPosX = posX - 0; // start from top right
+        barPosY = pad + oneRowHeight/2;
+
+    }
 
     ArrayList<Circle> getData() {
         return circles;
