@@ -106,7 +106,7 @@ void draw() {
     nightMovX+=0.01;
     pointPosX = sin(frameCount/10000) * 20;
     pointPosY = cos(frameCount/1000) * 500;
-    println(nightMovX);
+    //println(nightMovX);
 
 
     // Amp input test lines

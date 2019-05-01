@@ -1,0 +1,60 @@
+import processing.sound.*;
+
+FFT fft, fft2;
+AudioIn in, in2;
+int bands = 512;
+float[] spectrum = new float[bands];
+float[] spectrum2 = new float[bands];
+
+int cnt = 0;
+
+void setup() {
+  size(1920, 512);
+  background(0);
+
+  // Create an Input stream which is routed into the Amplitude analyzer
+  fft = new FFT(this, bands);
+  in = new AudioIn(this, 0);
+  //in2 = new AudioIn(this, 1);
+
+
+  // start the Audio Input
+  in.start();
+  //in2.start();
+
+  // patch the AudioIn
+  fft.input(in);
+  //fft2.input(in2);
+}      
+
+
+void draw()
+{
+  fft.analyze(spectrum);
+
+  stroke(255);
+
+
+
+  for (int i = 0; i < bands; i++)
+  {
+    //     // draw the line for frequency band i, scaling it up a bit so we can see it
+    //     // line( i, height, i, height - fft.getBand(i)*8 );
+    //     // line( 100, height - i, -fft.getBand(i), 100, height - i, fft.getBand(i) );
+    noStroke();
+    // noFill();
+    rectMode(CENTER);
+    // ellipse(cnt, height-i, fft.getBand(i)/10, fft.getBand(i)/10);
+    rect(cnt, height-i, spectrum[i] * width, spectrum[i] * width);
+    // ellipse(cnt, height-i, fft.getBand(i)/200*i, fft.getBand(i)/200*i);
+    //     // buffers[j][i] = fft.getBand(i);
+    //     // buffers[j][i] = buffers[j+1][i];
+    //     buffers[buffers.length - 1][i] = fft.getBand(i);
+  }
+
+  cnt++;
+  if (cnt >= width) {
+    background(0);
+    cnt = 0;
+  }
+}

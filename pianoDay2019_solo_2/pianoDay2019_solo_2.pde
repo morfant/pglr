@@ -211,7 +211,7 @@ void draw() {
         // gray
         c.setFillColor(r2, g2, b2, 70);
         c.setStrokeColor(r2/2, g2/2, b2/2, 140);
-        float vd = constrain(width/2 * ((float)frameCount/(1800*25)), 0, width/2 + 200);
+        float vd = constrain(width/2 * ((float)frameCount/(1800*35)), 0, width/2 + 200);
         // println(vd);
         c.setDeadLine(width/2 - vd);
         circlesEcho.add(c);
