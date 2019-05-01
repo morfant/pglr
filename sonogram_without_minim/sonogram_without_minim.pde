@@ -1,19 +1,22 @@
 import processing.sound.*;
 
+int bands = 1024;
 FFT fft, fft2;
 AudioIn in, in2;
-int bands = 512;
 float[] spectrum = new float[bands];
 float[] spectrum2 = new float[bands];
 
 int cnt = 0;
+int visualizeMul = width/4;
 
 void setup() {
-  size(1920, 512);
+  size(1920, 1024);
   background(0);
+  rectMode(CENTER);
 
   // Create an Input stream which is routed into the Amplitude analyzer
   fft = new FFT(this, bands);
+  fft2 = new FFT(this, bands);
   in = new AudioIn(this, 0);
   in2 = new AudioIn(this, 1);
 
@@ -31,25 +34,26 @@ void setup() {
 void draw()
 {
   fft.analyze(spectrum);
-
-  stroke(255);
-
-
+  fft2.analyze(spectrum2);
 
   for (int i = 0; i < bands; i++)
   {
-    //     // draw the line for frequency band i, scaling it up a bit so we can see it
-    //     // line( i, height, i, height - fft.getBand(i)*8 );
-    //     // line( 100, height - i, -fft.getBand(i), 100, height - i, fft.getBand(i) );
+    //stroke(255, spectrum[i] * visualizeMul * i);
     noStroke();
-    // noFill();
-    rectMode(CENTER);
-    // ellipse(cnt, height-i, fft.getBand(i)/10, fft.getBand(i)/10);
-    rect(cnt, height-i, spectrum[i] * width, spectrum[i] * width);
-    // ellipse(cnt, height-i, fft.getBand(i)/200*i, fft.getBand(i)/200*i);
-    //     // buffers[j][i] = fft.getBand(i);
-    //     // buffers[j][i] = buffers[j+1][i];
-    //     buffers[buffers.length - 1][i] = fft.getBand(i);
+    fill(255, spectrum[i] * visualizeMul * i);
+    //noFill();
+    //rect(cnt, height-i, spectrum[i] * visualizeMul * i, spectrum[i] * visualizeMul * i);
+    ellipse(cnt, height-i, spectrum[i] * visualizeMul * i, spectrum[i] * visualizeMul * i);
+    
+    
+    //stroke(255, spectrum2[i] * visualizeMul * i);
+    //stroke(200, 10, 100);
+    //noStroke();
+    fill(255, 100, 100, spectrum2[i] * visualizeMul * i);
+    //noFill();
+    //rect(cnt, height-i, spectrum2[i] * visualizeMul * i, spectrum2[i] * visualizeMul * i);
+    ellipse(cnt, height-i, spectrum2[i] * visualizeMul * i, spectrum2[i] * visualizeMul * i);
+    
   }
 
   cnt++;
