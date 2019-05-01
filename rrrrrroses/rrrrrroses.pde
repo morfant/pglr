@@ -1,7 +1,13 @@
 /*
   20170412
-  rrrrrrosees
-*/
+ rrrrrrosees
+ */
+
+
+import processing.pdf.*;
+import processing.svg.*;
+boolean record;
+
 
 float posX = 0;
 float posY = 0;
@@ -17,7 +23,7 @@ boolean drawEnable = true;
 
 void setup()
 {
-  size(1440, 900, P3D);
+  size(3600, 2200, P3D);
   smooth();
   noFill();
   stroke(255);
@@ -31,13 +37,15 @@ void setup()
   side = width/12;
 
   noLoop();
+  //background(0, 0, 0, 170);
 }
 
 
 void draw()
 {
-
-  background(0, 0, 0, 170);
+  //beginRaw(PDF, "rrose-####.pdf");
+  //beginRecord(PDF, "rrose-####.pdf");
+  background(0, 170);
   //fill(0, 0, 0, 60);
   //rect(0, 0, width, height);
   count_2 = 0;
@@ -67,7 +75,13 @@ void draw()
   //camera(width*mouseX/width, height*eyeY/height, height*mouseY/height, width/2, height/2, 0.0, 0.0, 1.0, 0.0);
   //camera(width*mouseX/width, height*eyeY/height, height*mouseY/height, width/2, height/2, 0.0, 0.0, 1.0, 0.0);
 
-  //saveFrame("frames/####.tif");
+  saveFrame("frames/####.tif");
+
+
+  //print("record pdf");
+  //endRaw();
+  //endRecord();
+  
 }
 
 
@@ -140,8 +154,7 @@ void keyPressed() {
     } else if (keyCode == DOWN) {
       eyeY-=100;
     } else if (keyCode == ENTER) {
-    saveFrame("frames/####.tif");
-    
+      saveFrame("frames/####.tif");
     }
   }
 }

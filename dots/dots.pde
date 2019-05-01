@@ -7,7 +7,7 @@ ArrayList<Dot> dots;
 
 void setup()
 {
-  size(700, 800);
+  size(900, 1000);
   frameRate(30);
   smooth();
   dots = new ArrayList<Dot>();  
