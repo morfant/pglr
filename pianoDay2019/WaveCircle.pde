@@ -30,7 +30,7 @@ class WaveCircle {
     }
 
     void draw() {
-        strokeWeight(0.4);
+        strokeWeight(0.7);
 
         // noFill()
         // float newValue = buffer.get(buffer.size() - 1);
@@ -47,8 +47,11 @@ class WaveCircle {
         // float d = 360 / len;
         if (len >= 360) {
 
-            fill(10, 80, 200);
-            stroke(0, 150);
+            //fill(10, 80, 200);
+            //fill(255, 80, 80);
+            //stroke(0, 150);
+            noFill();
+            stroke(255, 80, 80);
 
             for (int i = 0; i < 360; i++) {
                 float x = r * cos(radians(-i * 1));

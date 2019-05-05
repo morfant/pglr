@@ -19,8 +19,8 @@ float[] radius = new float[1920];
 float[] radius2 = new float[1920];
 
 int cnt = 0;
-int visualizeMul = width*2;
-int visualizeMul2 = width/5;
+int visualizeMul = width*4; // stream
+int visualizeMul2 = width; // instrument
 
 ArrayList<Circle> circles = new ArrayList<Circle>();
 

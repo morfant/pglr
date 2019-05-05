@@ -38,6 +38,7 @@ void setup() {
     //size(1920, 1080);
     fullScreen();
     background(255);
+    noCursor();
       
     bufLondon = new FloatList();
     bufSeoul = new FloatList();
@@ -48,8 +49,8 @@ void setup() {
     // Create an Input stream which is routed into the Amplitude analyzer
     amp = new Amplitude(this);
     amp2 = new Amplitude(this);
-    in = new AudioIn(this, 0);
-    in2 = new AudioIn(this, 1);
+    in = new AudioIn(this, 1);
+    in2 = new AudioIn(this, 0);
     in.start();
     in2.start();
     amp.input(in);
