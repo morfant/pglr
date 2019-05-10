@@ -3,7 +3,7 @@
 
 import processing.sound.*;
 
-boolean TWO_IN = true;
+boolean TWO_IN = false;
 int bands = 1024;
 FFT fft, fft2;
 AudioIn in, in2;
@@ -19,7 +19,7 @@ float[] radius = new float[1920];
 float[] radius2 = new float[1920];
 
 int cnt = 0;
-int visualizeMul = width*4; // stream
+int visualizeMul = width; // stream
 int visualizeMul2 = width; // instrument
 
 ArrayList<Circle> circles = new ArrayList<Circle>();
