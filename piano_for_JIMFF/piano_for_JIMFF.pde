@@ -1,7 +1,11 @@
 
 import java.io.*;
 import processing.sound.*;
+import oscP5.*;
+import netP5.*;
 
+OscP5 oscP5;
+NetAddress myRemoteLocation;
 Amplitude amp, amp2, amp3;
 AudioIn in, in2, in3;
 
@@ -69,282 +73,282 @@ int a3 = 80;
 // ArrayList<Circle> loadedCircles;
 
 void setup() {
-     //size(1280, 900);
-    // size(1920, 1080);
-    fullScreen();
-    background(255);
-      
-    Sound.list();
-    // Create an Input stream which is routed into the Amplitude analyzer
-    amp = new Amplitude(this);
-    amp2 = new Amplitude(this);
-    amp3 = new Amplitude(this);
-    in = new AudioIn(this, 2); // piano
-    in2 = new AudioIn(this, 4); // piano echo
-    in3 = new AudioIn(this, 5); // ticket
-    in.start();
-    in2.start();
-    in3.start();
-    amp.input(in);
-    amp2.input(in2);
-    amp3.input(in3);
+  size(1280, 900);
+   //size(1920, 1080);
+  //fullScreen();
+  background(255);
 
-    fft = new FFT(this, bands);
-    fft.input(in);
+  /* start oscP5, listening for incoming messages at port 12000 */
+  oscP5 = new OscP5(this, 12000);
 
-    fft2 = new FFT(this, bands);
-    fft2.input(in2);
+  Sound.list();
+  // Create an Input stream which is routed into the Amplitude analyzer
+  amp = new Amplitude(this);
+  amp2 = new Amplitude(this);
+  amp3 = new Amplitude(this);
+  in = new AudioIn(this, 2); // piano
+  in2 = new AudioIn(this, 4); // piano echo
+  in3 = new AudioIn(this, 5); // ticket
+  in.start();
+  in2.start();
+  in3.start();
+  amp.input(in);
+  amp2.input(in2);
+  amp3.input(in3);
 
-    fft3 = new FFT(this, bands);
-    fft3.input(in3);
+  fft = new FFT(this, bands);
+  fft.input(in);
 
+  fft2 = new FFT(this, bands);
+  fft2.input(in2);
 
-    baseLineY = height/2 + 300;
-
-    writer_1 = new Writer(width - pad*2, pad, writerAmpMul1);
-    writer_1.setFillColor(r1, g1, b1, a1/3);
-    writer_2 = new Writer(width/2, pad, writerAmpMul2);
-    writer_2.setFillColor(r2, g2, b2, a2);
+  fft3 = new FFT(this, bands);
+  fft3.input(in3);
 
 
-    writer_3 = new Writer(width/2, pad/2, writerAmpMul3);
-    writer_3.setFillColor(r3, g3, b3, a3);
+  baseLineY = height/2 + 300;
 
-}      
+  writer_1 = new Writer(width - pad*2, pad, writerAmpMul1);
+  writer_1.setFillColor(r1, g1, b1, a1/3);
+  writer_2 = new Writer(width/2, pad, writerAmpMul2);
+  writer_2.setFillColor(r2, g2, b2, a2);
+
+
+  writer_3 = new Writer(width/2, pad/2, writerAmpMul3);
+  writer_3.setFillColor(r3, g3, b3, a3);
+}
 
 void draw() {
-    background(255);
-    
-    fft.analyze(spectrum);
-    fft2.analyze(spectrum2);
-    fft3.analyze(spectrum3);
+  background(255);
 
-    int pitchIdx = getMaxValIdx(spectrum);
-    int pitchIdx2 = getMaxValIdx(spectrum2);
-    int pitchIdx3 = getMaxValIdx(spectrum3);
+  fft.analyze(spectrum);
+  fft2.analyze(spectrum2);
+  fft3.analyze(spectrum3);
 
-    // println(pitchIdx);
-    // println(pitchIdx2);
-    // colorMode(HSB, 360, 100, 100);
-    // float vc = (float)maxValIdx/(float)spectrum.length * 360.0;
-    // println(vc);
-    // fill(220 + vc, 100, 100);
-    // rect(0, 0, 100, 100);
+  int pitchIdx = getMaxValIdx(spectrum);
+  int pitchIdx2 = getMaxValIdx(spectrum2);
+  int pitchIdx3 = getMaxValIdx(spectrum3);
 
-    // noStroke();
-    // fill(255);
-    // rect(0, 0, width, height);
+  // println(pitchIdx);
+  // println(pitchIdx2);
+  // colorMode(HSB, 360, 100, 100);
+  // float vc = (float)maxValIdx/(float)spectrum.length * 360.0;
+  // println(vc);
+  // fill(220 + vc, 100, 100);
+  // rect(0, 0, 100, 100);
 
-    // Boundary
-    // stroke(0);
-    // line(pad, pad, width - pad, pad);
-    // line(width - pad, pad, width - pad, height - pad);
-    // line(width - pad, height - pad, pad, height - pad);
-    // line(pad, height - pad, pad, pad);
+  // noStroke();
+  // fill(255);
+  // rect(0, 0, width, height);
 
-    // Center red line
-    // stroke(255, 0, 0);
-    // line(width/2, 0, width/2, height);
+  // Boundary
+  // stroke(0);
+  // line(pad, pad, width - pad, pad);
+  // line(width - pad, pad, width - pad, height - pad);
+  // line(width - pad, height - pad, pad, height - pad);
+  // line(pad, height - pad, pad, pad);
 
-
-    // Update buffer
-    float newValue = amp.analyze(); // input ch 1
-    float newValue2 = amp2.analyze(); // input ch 2
-    float newValue3 = amp3.analyze(); // input ch 2
-
-    // amp input test line
-    // stroke(255, 0, 0);
-    // line(0, 100, newValue * 1000, 100);
-    // stroke(0, 0, 255);
-    // line(0, 200, newValue2 * 1000, 200);
+  // Center red line
+  // stroke(255, 0, 0);
+  // line(width/2, 0, width/2, height);
 
 
-    // circles 1
-    if (newValue > ampThr1) {
+  // Update buffer
+  float newValue = amp.analyze(); // input ch 1
+  float newValue2 = amp2.analyze(); // input ch 2
+  float newValue3 = amp3.analyze(); // input ch 2
 
-        if (pitchGrabbed == false) {
-            pitch = pitchIdx;
-            pitchGrabbed = true;
-            pitchInterval = 0;
-        }
+  // amp input test line
+  // stroke(255, 0, 0);
+  // line(0, 100, newValue * 1000, 100);
+  // stroke(0, 0, 255);
+  // line(0, 200, newValue2 * 1000, 200);
 
-        if (pitchInterval > 10) {
-            pitchGrabbed = false;
-            pitchInterval = 0;
-        }
 
-        float v = newValue;
-        Circle c = new Circle(width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad, false);
-        c.setStrokeWeight(2.0);
-        // green
-        // c.setFillColor(10, 180, 80, 200);
-        // c.setStrokeColor(0, 0, 255, 200);
+  // circles 1
+  if (newValue > ampThr1) {
 
-        // blue
-        c.setFillColor(r1, g1, b1, a1);
-        c.setStrokeColor(170, 170, 190, 200);
-
-        circles.add(c);
-
-        writer_1.data(v, pitch);
-        pitchInterval++;
+    if (pitchGrabbed == false) {
+      pitch = pitchIdx;
+      pitchGrabbed = true;
+      pitchInterval = 0;
     }
 
-    for (Circle c : circles) {
-        c.update();
-        c.draw();
-    } 
-
-    noFill();
-    // fill(255, 100);
-    beginShape();
-    // stroke(255, 100);
-    strokeWeight(0.05);
-    noStroke();
-    for (Circle c : circles) {
-        PVector pos = c.getPos();
-        vertex(pos.x, pos.y);
-    } 
-    endShape();
-
-    for (int i = circles.size() - 1; i >= 0; i--) {
-        Circle c = circles.get(i);
-        if (c.isDead() == true) {
-            circles.remove(i);
-        }
+    if (pitchInterval > 10) {
+      pitchGrabbed = false;
+      pitchInterval = 0;
     }
 
-//    writer_1.update();
-//    writer_1.draw();
+    float v = newValue;
+    Circle c = new Circle(width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad, false);
+    c.setStrokeWeight(2.0);
+    // green
+    // c.setFillColor(10, 180, 80, 200);
+    // c.setStrokeColor(0, 0, 255, 200);
 
-    // circlesEcho
-    if (newValue2 > ampThr2) {
+    // blue
+    c.setFillColor(r1, g1, b1, a1);
+    c.setStrokeColor(170, 170, 190, 200);
 
-        if (pitchGrabbed2 == false) {
-            pitch2 = pitchIdx2;
-            pitchGrabbed2 = true;
-            pitchInterval2 = 0;
-        }
+    circles.add(c);
 
-        if (pitchInterval2 > 10) {
-            pitchGrabbed2 = false;
-            pitchInterval2 = 0;
-        }
+    writer_1.data(v, pitch);
+    pitchInterval++;
+  }
 
-        float v = newValue2;
-        Circle c = new Circle(width - pad, baseLineY - pitch2 * 10, mulAmp2 * newValue2, true, true, width/2, false);
-        c.setStrokeWeight(0.3);
-        // purple
-        // c.setFillColor(128, 0, 255, 80);
-        // c.setStrokeColor(255, 155, 155, 80);
+  for (Circle c : circles) {
+    c.update();
+    c.draw();
+  }
 
-        // gray
-        c.setFillColor(r2, g2, b2, 70);
-        c.setStrokeColor(r2/2, g2/2, b2/2, 140);
-        float vd = constrain(width/2 * ((float)frameCount/(1800*35)), 0, width/2 + 200);
-        // println(vd);
-        c.setDeadLine(width/2 - vd);
-        circlesEcho.add(c);
+  noFill();
+  // fill(255, 100);
+  beginShape();
+  // stroke(255, 100);
+  strokeWeight(0.05);
+  noStroke();
+  for (Circle c : circles) {
+    PVector pos = c.getPos();
+    vertex(pos.x, pos.y);
+  }
+  endShape();
 
-        writer_2.data(newValue2, pitch);
-        pitchInterval2++;
+  for (int i = circles.size() - 1; i >= 0; i--) {
+    Circle c = circles.get(i);
+    if (c.isDead() == true) {
+      circles.remove(i);
+    }
+  }
+
+  //    writer_1.update();
+  //    writer_1.draw();
+
+  // circlesEcho
+  if (newValue2 > ampThr2) {
+
+    if (pitchGrabbed2 == false) {
+      pitch2 = pitchIdx2;
+      pitchGrabbed2 = true;
+      pitchInterval2 = 0;
     }
 
-    for (Circle c : circlesEcho) {
-        c.update();
-        c.draw();
-    } 
-
-    // noFill();
-    fill(255, 100);
-    beginShape(LINES);
-    // stroke(255, 100);
-    strokeWeight(1);
-    for (Circle c : circlesEcho) {
-        PVector pos = c.getPos();
-        vertex(pos.x, pos.y);
-    } 
-    endShape();
-
-    for (int i = circlesEcho.size() - 1; i >= 0; i--) {
-        Circle c = circlesEcho.get(i);
-        if (c.isDead() == true) {
-            circlesEcho.remove(i);
-        }
+    if (pitchInterval2 > 10) {
+      pitchGrabbed2 = false;
+      pitchInterval2 = 0;
     }
 
+    float v = newValue2;
+    Circle c = new Circle(width - pad, baseLineY - pitch2 * 10, mulAmp2 * newValue2, true, true, width/2, false);
+    c.setStrokeWeight(0.3);
+    // purple
+    // c.setFillColor(128, 0, 255, 80);
+    // c.setStrokeColor(255, 155, 155, 80);
 
- //   writer_2.update();
- //   writer_2.draw();
+    // gray
+    c.setFillColor(r2, g2, b2, 70);
+    c.setStrokeColor(r2/2, g2/2, b2/2, 140);
+    float vd = constrain(width/2 * ((float)frameCount/(1800*35)), 0, width/2 + 200);
+    // println(vd);
+    c.setDeadLine(width/2 - vd);
+    circlesEcho.add(c);
+
+    writer_2.data(newValue2, pitch);
+    pitchInterval2++;
+  }
+
+  for (Circle c : circlesEcho) {
+    c.update();
+    c.draw();
+  }
+
+  // noFill();
+  fill(255, 100);
+  beginShape(LINES);
+  // stroke(255, 100);
+  strokeWeight(1);
+  for (Circle c : circlesEcho) {
+    PVector pos = c.getPos();
+    vertex(pos.x, pos.y);
+  }
+  endShape();
+
+  for (int i = circlesEcho.size() - 1; i >= 0; i--) {
+    Circle c = circlesEcho.get(i);
+    if (c.isDead() == true) {
+      circlesEcho.remove(i);
+    }
+  }
+
+
+  //   writer_2.update();
+  //   writer_2.draw();
 
 
 
 
-    // circles ticket 
-    if (newValue3 > ampThr3) {
+  // circles ticket
+  if (newValue3 > ampThr3) {
 
-        if (pitchGrabbed == false) {
-            pitch = pitchIdx;
-            pitchGrabbed = true;
-            pitchInterval = 0;
-        }
-
-        if (pitchInterval > 30) {
-            pitchGrabbed = false;
-            pitchInterval = 0;
-        }
-
-        float v = newValue3;
-        Circle c = new Circle(width/2, baseLineY - pitch * 30, mulAmp3 * v, true, true, pad, false);
-        c.setStrokeWeight(2.0);
-        // green
-        // c.setFillColor(30, 380, 80, 200);
-        // c.setStrokeColor(0, 0, 255, 200);
-
-        // blue
-        c.setFillColor(r3, g3, b3, a3);
-        c.setStrokeColor(370, 370, 390, 200);
-
-        circlesTicket.add(c);
-
-        writer_3.data(v, pitch);
-        pitchInterval++;
+    if (pitchGrabbed == false) {
+      pitch = pitchIdx;
+      pitchGrabbed = true;
+      pitchInterval = 0;
     }
 
-    for (Circle c : circlesTicket) {
-        c.update();
-        c.draw();
-    } 
-
-    noFill();
-    // fill(255, 300);
-    beginShape();
-    // stroke(255, 300);
-    strokeWeight(0.05);
-    noStroke();
-    for (Circle c : circlesTicket) {
-        PVector pos = c.getPos();
-        vertex(pos.x, pos.y);
-    } 
-    endShape();
-
-    for (int i = circlesTicket.size() - 1; i >= 0; i--) {
-        Circle c = circlesTicket.get(i);
-        if (c.isDead() == true) {
-            circlesTicket.remove(i);
-        }
+    if (pitchInterval > 30) {
+      pitchGrabbed = false;
+      pitchInterval = 0;
     }
 
-    writer_3.update();
-    writer_3.draw();
+    float v = newValue3;
+    Circle c = new Circle(width/2, baseLineY - pitch * 30, mulAmp3 * v, true, true, pad, false);
+    c.setStrokeWeight(2.0);
+    // green
+    // c.setFillColor(30, 380, 80, 200);
+    // c.setStrokeColor(0, 0, 255, 200);
 
+    // blue
+    c.setFillColor(r3, g3, b3, a3);
+    c.setStrokeColor(370, 370, 390, 200);
 
+    circlesTicket.add(c);
+
+    writer_3.data(v, pitch);
+    pitchInterval++;
+  }
+
+  for (Circle c : circlesTicket) {
+    c.update();
+    c.draw();
+  }
+
+  noFill();
+  // fill(255, 300);
+  beginShape();
+  // stroke(255, 300);
+  strokeWeight(0.05);
+  noStroke();
+  for (Circle c : circlesTicket) {
+    PVector pos = c.getPos();
+    vertex(pos.x, pos.y);
+  }
+  endShape();
+
+  for (int i = circlesTicket.size() - 1; i >= 0; i--) {
+    Circle c = circlesTicket.get(i);
+    if (c.isDead() == true) {
+      circlesTicket.remove(i);
+    }
+  }
+
+  writer_3.update();
+  writer_3.draw();
 }
 
 // void mouseClicked() {
-    // bufNumSeoul_1 = (int)random(180, 480);
-    // bufSeoul_1.clear();
-    // println(bufNumSeoul_1);
+// bufNumSeoul_1 = (int)random(180, 480);
+// bufSeoul_1.clear();
+// println(bufNumSeoul_1);
 
 //     ArrayList<Circle> cs = writer_1.getData();
 //     saveModel("C:/Users/morfa/Documents/pglr/pianoDay2019_solo_2/test.bin", cs);
@@ -352,67 +356,86 @@ void draw() {
 // }
 
 void resetCanvas() {
-    for (int i = circles.size() - 1; i >= 0; i--) {
-        circles.remove(i);
-    }
-    for (int i = circlesEcho.size() - 1; i >= 0; i--) {
-        circlesEcho.remove(i);
-    }
-    for (int i = circlesTicket.size() - 1; i >= 0; i--) {
-        circlesTicket.remove(i);
-    }
+  for (int i = circles.size() - 1; i >= 0; i--) {
+    circles.remove(i);
+  }
+  for (int i = circlesEcho.size() - 1; i >= 0; i--) {
+    circlesEcho.remove(i);
+  }
+  for (int i = circlesTicket.size() - 1; i >= 0; i--) {
+    circlesTicket.remove(i);
+  }
 
 
-    writer_1.reset();
-    writer_2.reset();
-    writer_3.reset();
+  writer_1.reset();
+  writer_2.reset();
+  writer_3.reset();
 }
 
 
 void keyPressed() {
-    if (key == 'r' || key == 'R') {
-        println("Reset");
-        resetCanvas();
-    }
+  if (key == 'r' || key == 'R') {
+    println("Reset");
+    resetCanvas();
+  }
 }
 
 int getMaxValIdx(float[] fArr) {
-    float maxVal = 0;
-    int maxValIdx = 0;
-    for (int i = 0; i < fArr.length; i++) {
-        if (fArr[i] > maxVal) {
-            maxVal = fArr[i];
-            maxValIdx = i;
-        }
+  float maxVal = 0;
+  int maxValIdx = 0;
+  for (int i = 0; i < fArr.length; i++) {
+    if (fArr[i] > maxVal) {
+      maxVal = fArr[i];
+      maxValIdx = i;
     }
+  }
 
-    return maxValIdx;
+  return maxValIdx;
 }
 
-public void saveModel(String fileName, ArrayList<Circle> circles){
-    try {
-        // File file = new File(getFilesDir(), fileName);
-        FileOutputStream fos = new FileOutputStream(fileName);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(circles);
-        fos.close();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+public void saveModel(String fileName, ArrayList<Circle> circles) {
+  try {
+    // File file = new File(getFilesDir(), fileName);
+    FileOutputStream fos = new FileOutputStream(fileName);
+    ObjectOutputStream oos = new ObjectOutputStream(fos);
+    oos.writeObject(circles);
+    fos.close();
+  }
+  catch (IOException e) {
+    e.printStackTrace();
+  }
 }
 
 
-public ArrayList<Circle> loadModel(String fileName){
-    ArrayList<Circle> circles = null;
-    try {
-        FileInputStream fis = new FileInputStream(fileName);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        circles = (ArrayList<Circle>) ois.readObject();
-        fis.close();
-    } catch (IOException e) {
-        e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-        e.printStackTrace();
+public ArrayList<Circle> loadModel(String fileName) {
+  ArrayList<Circle> circles = null;
+  try {
+    FileInputStream fis = new FileInputStream(fileName);
+    ObjectInputStream ois = new ObjectInputStream(fis);
+    circles = (ArrayList<Circle>) ois.readObject();
+    fis.close();
+  }
+  catch (IOException e) {
+    e.printStackTrace();
+  }
+  catch (ClassNotFoundException e) {
+    e.printStackTrace();
+  }
+  return circles;
+}
+
+
+void oscEvent(OscMessage theOscMessage) {
+  //println("osc");
+  if (theOscMessage.checkAddrPattern("/toConsole") == true) {
+    if (theOscMessage.checkTypetag("s")) {
+      String msg = theOscMessage.get(0).stringValue();
+      if (msg.equals("reset") == true) {
+        resetCanvas();
+        println("resetCanvas() with OSC");
+      }
+      return;
     }
-    return circles;
+  }
+
 }
