@@ -9,12 +9,15 @@ import netP5.*;
 
 OscP5 oscP5;
 NetAddress myRemoteLocation;
+final String DEST_ADDR = "localhost";
+// String const DEST_ADDR = "192.168.0.4";
+
 
 void setup() {
   size(400, 400);
   frameRate(25);
   /* start oscP5, listening for incoming messages at port 12000 */
-  oscP5 = new OscP5(this, 12000);
+  oscP5 = new OscP5(this, 2000);
 
   /* myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
    * an ip address and a port number. myRemoteLocation is used as parameter in
@@ -23,7 +26,8 @@ void setup() {
    * and the port of the remote location address are the same, hence you will
    * send messages back to this sketch.
    */
-  myRemoteLocation = new NetAddress("127.0.0.1", 12000);
+  // myRemoteLocation = new NetAddress("192.168.0.4", 12000);
+  myRemoteLocation = new NetAddress(DEST_ADDR, 12000);
 }
 
 
@@ -31,9 +35,22 @@ void draw() {
   background(0);  
 
   if (keyPressed) {
+    fill(0);
     if (key == 'r' || key == 'R') {
-      fill(0);
-      sendResetMsg();
+      sendResetMsg("r");
+      println("r");
+    } else if (key == 'd' || key == 'D') {
+      sendResetMsg("d");
+      println("d");
+    } else if (key == 'f' || key == 'F') {
+      sendResetMsg("f");
+      println("f");
+    } else if (key == 'j' || key == 'J') {
+      sendResetMsg("j");
+      println("j");
+    } else if (key == 'k' || key == 'K') {
+      sendResetMsg("k");
+      println("k");
     }
   } else {
     fill(255);
@@ -42,12 +59,20 @@ void draw() {
 }
 
 
-
-
-void sendResetMsg() {
+void sendMsg(int i) {
   OscMessage myMessage = new OscMessage("/toConsole");
 
-  myMessage.add("reset"); /* add an int to the osc message */
+  myMessage.add(i); /* add an int to the osc message */
+
+  oscP5.send(myMessage, myRemoteLocation);
+}
+
+
+
+void sendResetMsg(String str) {
+  OscMessage myMessage = new OscMessage("/toConsole");
+
+  myMessage.add(str); /* add an int to the osc message */
 
   oscP5.send(myMessage, myRemoteLocation);
 }
