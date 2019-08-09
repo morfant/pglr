@@ -15,18 +15,22 @@ class Circle implements Serializable {
     int alpha_strk = 255;
     float anglePos = 0;
     float vangle = 0;
-    float beginAngleOffset = 5;
+    float beginAngleOffset = 3;
+
+    boolean goAround = true;
  
     boolean isDead = false;
     boolean isFill = true;
     boolean isStroke = true;
     boolean withRect = false;
+    boolean aging = false;
+    int age = 0;
+    final int AGE_LIMIT = 30;
 
     float deadLineX = 0;
 
     float strokeWeight = 2;
     float distFromCenter = 0;
-    
 
     Circle(float x, float y, float r, boolean _isFill, boolean _isStroke, float _deadlineX, boolean _withRect) {
         posX = x;
@@ -41,6 +45,31 @@ class Circle implements Serializable {
         withRect = _withRect;
 
         anglePos = beginAngleOffset;
+
+        aging = false;
+        age = 0;
+    }
+
+    PVector getPos() {
+        return new PVector(posX, posY);
+    }
+
+    void setPos(float x, float y) {
+        posX = x;
+        posY = y;
+    }
+
+    void setAging(boolean b) {
+        aging = b;
+    }
+
+    void setVelocity(float x, float y) {
+        vx = x;
+        vy = y;
+    }
+
+    void setRadius(float r) {
+        radius = r;
     }
 
     void setDistFromCenter(float d) {
@@ -56,28 +85,8 @@ class Circle implements Serializable {
         }
     }
 
-    void update() {
-        // posX = posX - vx;
-
-        // if (posX < deadLineX) {
-        //     isDead = true;
-        // }
-
-        anglePos += vangle;
-        if (abs(anglePos) > 355) {
-            isDead = true;
-        }
-        posX = 0;
-        posY = -distFromCenter;
-
-    }
-
-    PVector getPos() {
-        return new PVector(posX, posY);
-    }
-
-    boolean isDead() {
-        return isDead;
+    void setGoAround(boolean b) {
+        goAround = b;
     }
 
     void setFillColor(int r, int g, int b, int a) {
@@ -101,7 +110,35 @@ class Circle implements Serializable {
     void setStrokeWeight(float _strokeWeight) {
         strokeWeight = _strokeWeight;
     }
- 
+
+    void update() {
+
+        if (aging) {
+            if (age > AGE_LIMIT) {
+                isDead = true;
+            } else {
+                // println("age: " + age);
+                age++;
+            }
+        }
+
+        if (goAround == true) {
+            anglePos += vangle;
+            if (abs(anglePos) > 355) {
+                isDead = true;
+            }
+            posX = 0;
+            posY = -distFromCenter;
+
+        } else {
+            posX = posX - vx;
+
+            if (posX < deadLineX) {
+                isDead = true;
+            }
+        }
+
+    }
 
     void draw() {
         fill(red, green, blue, alpha);
@@ -127,11 +164,22 @@ class Circle implements Serializable {
             fill(255);
         }
 
-        pushMatrix();
-        translate(width/2, height/2);
-        rotate(radians(anglePos));
+        if (goAround) {
+            pushMatrix();
+            translate(width/2, height/2);
+            rotate(radians(anglePos));
 
-        ellipse(posX, posY, radius, radius);
-        popMatrix();
+            ellipse(posX, posY, radius, radius);
+            popMatrix();
+        } else {
+            ellipse(posX, posY, radius, radius);
+        }
+
     }
+
+    boolean isDead() {
+        return isDead;
+    }
+
+
 }

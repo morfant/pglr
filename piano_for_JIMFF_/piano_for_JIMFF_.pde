@@ -74,6 +74,9 @@ boolean drawCH2 = false;
 boolean changeCH2 = false;
 boolean isReset = false;
 boolean isReset2 = false;
+boolean makeGoAround = false;
+boolean makeBlack = false;
+boolean circleOverwhelm = false;
 
 float newValue, newValue2, newValue3;
 
@@ -83,7 +86,7 @@ float newValue, newValue2, newValue3;
 void setup() {
   size(1280, 900);
    //size(1920, 1080);
-  //fullScreen();
+  // fullScreen();
   background(255);
 
   /* start oscP5, listening for incoming messages at port 12000 */
@@ -147,7 +150,16 @@ void setup() {
 }
 
 void draw() {
-  background(255);
+
+  if (makeBlack) {
+    background(0, 0, 0, 255);
+  } else {
+    background(255);
+  }
+
+  if (circleOverwhelm) {
+    background(0);
+  }
 
   fft.analyze(spectrum);
   fft2.analyze(spectrum2);
@@ -191,23 +203,50 @@ void draw() {
       pitchInterval = 0;
     }
 
-    float v = newValue;
-    Circle c = new Circle(width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad, false);
-    c.setDistFromCenter(400);
-    c.setVangle(-0.5);
-    c.setStrokeWeight(2.0);
-    // green
-    // c.setFillColor(10, 180, 80, 200);
-    // c.setStrokeColor(0, 0, 255, 200);
+    if (!makeBlack) {
+      float v = newValue;
+      Circle c = new Circle(width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad, false);
 
-    // blue
-    c.setFillColor(r1, g1, b1, a1);
-    c.setStrokeColor(170, 170, 190, 200);
+      if (circleOverwhelm) {
+        makeGoAround = false;
+        c.setPos(width/2, height/2);
+        c.setVelocity(0, 0);
+        // mulAmp1 = 180000;
+        mulAmp1 = 15000;
+      }
 
-    circles.add(c);
+      if (makeGoAround) {
+        c.setGoAround(true);
+        c.setDistFromCenter(400);
+        c.setVangle(-0.5);
+      } else {
+        c.setGoAround(false);
+      }
 
-    // writer_1.data(v, pitch);
-    pitchInterval++;
+      c.setStrokeWeight(2.0);
+      // green
+      // c.setFillColor(10, 180, 80, 200);
+      // c.setStrokeColor(0, 0, 255, 200);
+
+      // blue
+      if (!circleOverwhelm) {
+        c.setAging(false);
+        c.setFillColor(r1, g1, b1, a1);
+        c.setStrokeColor(170, 170, 190, 200);
+      } else {
+        c.setAging(true);
+        // println(v);
+        int a = (int)(v * 255);
+        // println(a);
+        c.setFillColor(r1, g1, b1, a);
+        c.setStrokeColor(0, 0, 0, 0);
+      }
+
+      circles.add(c);
+
+      // writer_1.data(v, pitch);
+      pitchInterval++;
+    }
   }
 
   if (isReset == true) {
@@ -225,16 +264,6 @@ void draw() {
         c.draw();
       }
     }
-
-  // for (int i = circles.size() - 1; i > 0; i--) {
-  //   if (circles.get(i) != null) {
-  //     circles.get(i).update();
-  //     circles.get(i).draw();
-  //   }
-  // }
-
-
-
   }
 
   noFill();
@@ -492,22 +521,37 @@ void oscEvent(OscMessage theOscMessage) {
     if (theOscMessage.checkTypetag("s")) {
       String msg = theOscMessage.get(0).stringValue();
       println("msg: " + msg);
-      if (msg.equals("r") == true) {
+      if (msg.equals("r")) {
         isReset = true;
         isReset2 = true;
         println("resetCanvas() with OSC");
-      } else if (msg.equals("d") == true) {
+      } else if (msg.equals("d")) {
         drawCH2 = true;
         println("drawCH2: " + drawCH2);
-      } else if (msg.equals("j") == true) {
-        changeCH2 = true;
-        println("changeCH2: " + changeCH2);
-      } else if (msg.equals("f") == true) {
+      } else if (msg.equals("f")) {
         drawCH2 = false;
         println("drawCH2: " + drawCH2);
-      } else if (msg.equals("k") == true) {
+      } else if (msg.equals("j")) {
+        changeCH2 = true;
+        println("changeCH2: " + changeCH2);
+      }else if (msg.equals("k")) {
         changeCH2 = false;
         println("changeCH2: " + changeCH2);
+      } else if (msg.equals("1")) {
+        makeGoAround = false;
+        circleOverwhelm = false;
+      } else if (msg.equals("2")) {
+        makeGoAround = true;
+        circleOverwhelm = false;
+      } else if (msg.equals("3")) {
+        makeGoAround = false;
+        circleOverwhelm = true;
+      } 
+      
+      else if (msg.equals("b")) {
+        makeBlack = true;
+      } else if (msg.equals("w")) {
+        makeBlack = false;
       }
       return;
     }

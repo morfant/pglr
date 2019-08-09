@@ -51,7 +51,16 @@ void draw() {
     } else if (key == 'k' || key == 'K') {
       sendResetMsg("k");
       println("k");
+    } else if (key == 'b' || key == 'B') {
+      sendResetMsg("b");
+    } else if (key == 'w' || key == 'W') {
+      sendResetMsg("w");
     }
+
+    else if (key == '1') { sendResetMsg("1"); }
+    else if (key == '2') { sendResetMsg("2"); }
+    else if (key == '3') { sendResetMsg("3"); }
+
   } else {
     fill(255);
   }
