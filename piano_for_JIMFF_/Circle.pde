@@ -15,7 +15,7 @@ class Circle implements Serializable {
     int alpha_strk = 255;
     float anglePos = 0;
     float vangle = 0;
-    float beginAngleOffset = 3;
+    float beginAngleOffset = 5;
 
     boolean goAround = true;
  
@@ -124,7 +124,7 @@ class Circle implements Serializable {
 
         if (goAround == true) {
             anglePos += vangle;
-            if (abs(anglePos) > 355) {
+            if (abs(anglePos) > 350) {
                 isDead = true;
             }
             posX = 0;

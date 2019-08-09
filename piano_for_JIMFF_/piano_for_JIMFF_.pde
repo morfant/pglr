@@ -70,7 +70,7 @@ int a3 = 80;
 
 boolean CH3 = false;
 
-boolean drawCH2 = false;
+boolean drawCH2 = true;
 boolean changeCH2 = false;
 boolean isReset = false;
 boolean isReset2 = false;
@@ -80,13 +80,16 @@ boolean circleOverwhelm = false;
 
 float newValue, newValue2, newValue3;
 
+float vAngle1 = -0.5;
+float vAngle2 = 0.5;
+
 // to save writing as a file
 // ArrayList<Circle> loadedCircles;
 
 void setup() {
-  size(1280, 900);
+  // size(1280, 900);
    //size(1920, 1080);
-  // fullScreen();
+  fullScreen();
   background(255);
 
   /* start oscP5, listening for incoming messages at port 12000 */
@@ -164,32 +167,14 @@ void draw() {
   fft.analyze(spectrum);
   fft2.analyze(spectrum2);
 
-  // if (CH3) {
-  //   fft3.analyze(spectrum3);
-  // }
-
   int pitchIdx = getMaxValIdx(spectrum);
   int pitchIdx2 = getMaxValIdx(spectrum2);
-  // if (CH3) {
-  //   int pitchIdx3 = getMaxValIdx(spectrum3);
-  // }
 
   // Update buffer
   newValue = amp.analyze(); // input ch 1
   newValue2 = amp2.analyze(); // input ch 2
 
-  // if (CH3) {
-  //   newValue3 = amp3.analyze(); // input ch 2
-  // }
-
-  // amp input test line
-  // stroke(255, 0, 0);
-  // line(0, 100, newValue * 1000, 100);
-  // stroke(0, 0, 255);
-  // line(0, 200, newValue2 * 1000, 200);
-
-
-  // 1 circles
+  // ------------------------------------------------------------- 1 circles -------------------------------------------------------------------
   if (newValue > ampThr1) {
 
     if (pitchGrabbed == false) {
@@ -218,15 +203,12 @@ void draw() {
       if (makeGoAround) {
         c.setGoAround(true);
         c.setDistFromCenter(400);
-        c.setVangle(-0.5);
+        c.setVangle(vAngle1);
       } else {
         c.setGoAround(false);
       }
 
       c.setStrokeWeight(2.0);
-      // green
-      // c.setFillColor(10, 180, 80, 200);
-      // c.setStrokeColor(0, 0, 255, 200);
 
       // blue
       if (!circleOverwhelm) {
@@ -249,6 +231,8 @@ void draw() {
     }
   }
 
+
+  // reset
   if (isReset == true) {
     
     for (int i = circles.size() - 1; i >= 0; i--) {
@@ -266,18 +250,19 @@ void draw() {
     }
   }
 
-  noFill();
-  // fill(255, 100);
-  beginShape();
-  // stroke(255, 100);
-  strokeWeight(0.05);
-  noStroke();
-  for (Circle c : circles) {
-    PVector pos = c.getPos();
-    vertex(pos.x, pos.y);
-  }
-  endShape();
 
+  // lines between circles
+  // noFill();
+  // beginShape();
+  // strokeWeight(10);
+  // // noStroke();
+  // for (Circle c : circles) {
+  //   PVector pos = c.getPos();
+  //   vertex(pos.x, pos.y);
+  // }
+  // endShape();
+
+  // remove dead circle
   for (int i = circles.size() - 1; i >= 0; i--) {
     Circle c = circles.get(i);
     if (c.isDead() == true) {
@@ -288,7 +273,7 @@ void draw() {
   //    writer_1.update();
   //    writer_1.draw();
 
-  // 2 circlesEcho
+  // ----------------------------------- 2 circlesEcho -----------------------------------------
   if (newValue2 > ampThr2) {
 
     if (pitchGrabbed2 == false) {
@@ -302,63 +287,76 @@ void draw() {
       pitchInterval2 = 0;
     }
 
-    float v = newValue2;
-    Circle c = new Circle(width - pad, baseLineY - pitch2 * 10, mulAmp2 * newValue2, true, true, width/2, false);
-    c.setDistFromCenter(200);
-    c.setVangle(0.5);
-    c.setStrokeWeight(0.3);
-    // purple
-    // c.setFillColor(128, 0, 255, 80);
-    // c.setStrokeColor(255, 155, 155, 80);
+    if (!makeBlack && !circleOverwhelm && drawCH2) {
+      float v = newValue2;
+      Circle c = new Circle(width - pad, baseLineY - pitch2 * 10, mulAmp2 * newValue2, true, true, width/2, false);
 
-    // gray
-    if (changeCH2 == false) {
-      c.setFillColor(r2, g2, b2, 70);
-      c.setStrokeColor(r2/2, g2/2, b2/2, 140);
-    } else {
-      c.setFillColor(r3, g3, b3, 70);
-      c.setStrokeColor(370, 370, 390, 200);
-    }
-    float vd = constrain(width/2 * ((float)frameCount/(1800*35)), 0, width/2 + 200);
-    // println(vd);
-    c.setDeadLine(width/2 - vd);
-    circlesEcho.add(c);
-
-    // writer_2.data(newValue2, pitch);
-    pitchInterval2++;
-  }
-
-  if (drawCH2) {
-    if (isReset2 == true) {
-  
-      for (int i = circlesEcho.size() - 1; i >= 0; i--) {
-        circlesEcho.remove(i);
+      if (makeGoAround) {
+        c.setGoAround(true);
+        c.setDistFromCenter(200);
+        c.setVangle(vAngle2); // rotate CW
+      } else {
+        c.setGoAround(false);
       }
 
-      isReset2 = false;
+      c.setStrokeWeight(0.3);
 
-    } else {
-      for (Circle c : circlesEcho) {
-        if (c != null) {
-          c.update();
-          c.draw();
-        }
+      // purple
+      // c.setFillColor(128, 0, 255, 80);
+      // c.setStrokeColor(255, 155, 155, 80);
+
+      // gray
+      if (changeCH2 == false) {
+        c.setFillColor(r2, g2, b2, 70);
+        c.setStrokeColor(r2/2, g2/2, b2/2, 140);
+      } else {
+        c.setFillColor(r3, g3, b3, 70);
+        c.setStrokeColor(370, 370, 390, 200);
       }
+
+      if (!makeGoAround) {
+        float vd = constrain(width/2 * ((float)frameCount/(1800*35)), 0, width/2 + 200);
+        // println(vd);
+        c.setDeadLine(width/2 - vd);
+      }
+
+      circlesEcho.add(c);
+
+      // writer_2.data(newValue2, pitch);
+      pitchInterval2++;
+    }
+  }
+
+  // reset circles
+  if (isReset2 == true) {
+    for (int i = circlesEcho.size() - 1; i >= 0; i--) {
+      circlesEcho.remove(i);
     }
 
+    isReset2 = false;
+
+  } else {
+    for (Circle c : circlesEcho) {
+      if (c != null) {
+        c.update();
+        c.draw();
+      }
+    }
   }
 
-  // noFill();
-  fill(255, 100);
-  beginShape(LINES);
-  // stroke(255, 100);
-  strokeWeight(1);
-  for (Circle c : circlesEcho) {
-    PVector pos = c.getPos();
-    vertex(pos.x, pos.y);
+  // lines between circles
+  if (!makeGoAround) {
+    fill(255, 100);
+    beginShape(LINES);
+    strokeWeight(1);
+    for (Circle c : circlesEcho) {
+      PVector pos = c.getPos();
+      vertex(pos.x, pos.y);
+    }
+    endShape();
   }
-  endShape();
 
+  // remove dead circle
   for (int i = circlesEcho.size() - 1; i >= 0; i--) {
     Circle c = circlesEcho.get(i);
     if (c.isDead() == true) {
@@ -370,94 +368,9 @@ void draw() {
   //   writer_2.update();
   //   writer_2.draw();
 
-
-
-  // if (CH3 == true) {
-
-  //   // circles ticket
-  //   if (newValue3 > ampThr3) {
-
-  //     if (pitchGrabbed == false) {
-  //       pitch = pitchIdx;
-  //       pitchGrabbed = true;
-  //       pitchInterval = 0;
-  //     }
-
-  //     if (pitchInterval > 30) {
-  //       pitchGrabbed = false;
-  //       pitchInterval = 0;
-  //     }
-
-  //     float v = newValue3;
-  //     Circle c = new Circle(width/2, baseLineY - pitch * 30, mulAmp3 * v, true, true, pad, false);
-  //     c.setStrokeWeight(2.0);
-  //     // green
-  //     // c.setFillColor(30, 380, 80, 200);
-  //     // c.setStrokeColor(0, 0, 255, 200);
-
-  //     // blue
-  //     c.setFillColor(r3, g3, b3, a3);
-  //     c.setStrokeColor(370, 370, 390, 200);
-
-  //     circlesTicket.add(c);
-
-  //     writer_3.data(v, pitch);
-  //     pitchInterval++;
-  //   }
-
-  //   for (Circle c : circlesTicket) {
-  //     c.update();
-  //     c.draw();
-  //   }
-
-  //   noFill();
-  //   // fill(255, 300);
-  //   beginShape();
-  //   // stroke(255, 300);
-  //   strokeWeight(0.05);
-  //   noStroke();
-  //   for (Circle c : circlesTicket) {
-  //     PVector pos = c.getPos();
-  //     vertex(pos.x, pos.y);
-  //   }
-  //   endShape();
-
-  //   for (int i = circlesTicket.size() - 1; i >= 0; i--) {
-  //     Circle c = circlesTicket.get(i);
-  //     if (c.isDead() == true) {
-  //       circlesTicket.remove(i);
-  //     }
-  //   }
-
-  //   writer_3.update();
-  //   writer_3.draw();
-  // }
-
 }
 
-// void mouseClicked() {
-// bufNumSeoul_1 = (int)random(180, 480);
-// bufSeoul_1.clear();
-// println(bufNumSeoul_1);
-
-//     ArrayList<Circle> cs = writer_1.getData();
-//     saveModel("C:/Users/morfa/Documents/pglr/pianoDay2019_solo_2/test.bin", cs);
-//     println("save file()");
-// }
-
 void resetCanvas() {
-  for (int i = circles.size() - 1; i >= 0; i--) {
-    circles.remove(i);
-  }
-
-  for (int i = circlesEcho.size() - 1; i >= 0; i--) {
-    circlesEcho.remove(i);
-  }
-  // for (int i = circlesTicket.size() - 1; i >= 0; i--) {
-  //   circlesTicket.remove(i);
-  // }
-
-
   // writer_1.reset();
   // writer_2.reset();
   // if (CH3) writer_3.reset();
@@ -466,8 +379,8 @@ void resetCanvas() {
 
 void keyPressed() {
   if (key == 'r' || key == 'R') {
-    println("Reset");
-    resetCanvas();
+    isReset = true;
+    isReset2 = true;
   }
 }
 
@@ -543,9 +456,16 @@ void oscEvent(OscMessage theOscMessage) {
       } else if (msg.equals("2")) {
         makeGoAround = true;
         circleOverwhelm = false;
+        // drawCH2 = false;
+        makeBlack = false;
+        ampThr1 = 0.008;
+        ampThr2 = 0.008;
       } else if (msg.equals("3")) {
         makeGoAround = false;
         circleOverwhelm = true;
+        makeBlack = false;
+        ampThr1 = 0.005;
+        ampThr2 = 0.005;
       } 
       
       else if (msg.equals("b")) {
