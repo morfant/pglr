@@ -37,7 +37,7 @@ class Figure implements Serializable {
     float strokeWeight = 2;
     float distFromCenter = 0;
 
-    Figure(float x, float y, float r, boolean _isFill, boolean _isStroke, float _deadlineX) {
+    Figure(int _type, float x, float y, float r, boolean _isFill, boolean _isStroke, float _deadlineX) {
         posX = x;
         posY = y;
         radius = r;
@@ -52,6 +52,8 @@ class Figure implements Serializable {
 
         aging = false;
         age = 0;
+
+        type = _type;
     }
 
     PVector getPos() {
@@ -175,19 +177,26 @@ class Figure implements Serializable {
 
         switch (_type) {
             case 0:
-                ellipse(posX, posY, radius, radius);
+                ellipse(0, 0, radius, radius);
             break;
 
             case 1:
+                rect(0, 0, radius, radius);
             break;
             
             case 2:
+                drawTriangle(0, 0, radius);
             break;
 
             case 3:
+                rotate(PI/4);
+                rect(0, 0, radius, radius);
             break;
 
             case 4:
+                beginShape();
+                // vertex();
+                endShape();
             break;
 
             default:
@@ -199,6 +208,13 @@ class Figure implements Serializable {
     boolean isDead() {
         return isDead;
     }
+
+    void drawTriangle(float x, float y, float r) {
+
+        triangle(x - r/2, y - r/2, x, y + r/2, x + r/2, y - r/2);
+
+    }
+
 
 
 }
