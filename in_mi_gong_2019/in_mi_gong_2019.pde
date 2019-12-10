@@ -10,13 +10,13 @@ Amplitude amp, amp2, amp3;
 AudioIn in, in2, in3;
 
 float ampThr1 = 0.005;
-float ampThr2 = 0.005;
-float ampThr3 = 0.005;
+// float ampThr2 = 0.005;
+// float ampThr3 = 0.005;
 
 // in jeokdo
 float mulAmp1 = 4600;
-float mulAmp2 = 4600;
-float mulAmp3 = 4600;
+// float mulAmp2 = 4600;
+// float mulAmp3 = 4600;
 
 // in test
 // float mulAmp1 = 300;
