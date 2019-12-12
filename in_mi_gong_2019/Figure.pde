@@ -27,10 +27,10 @@ class Figure implements Serializable {
     boolean isDead = false;
     boolean isFill = true;
     boolean isStroke = true;
-    boolean aging = false;
+    boolean aging = true;
 
     int age = 0;
-    final int AGE_LIMIT = 30;
+    final int AGE_LIMIT = 1;
 
     float deadLineX = 0;
 
@@ -50,7 +50,7 @@ class Figure implements Serializable {
 
         anglePos = beginAngleOffset;
 
-        aging = false;
+        aging = true;
         age = 0;
 
         type = _type;
@@ -119,9 +119,12 @@ class Figure implements Serializable {
 
     void update() {
 
+      
         if (aging) {
+          println("aging");
             if (age > AGE_LIMIT) {
                 isDead = true;
+                println("dddd");
             } else {
                 // println("age: " + age);
                 age++;

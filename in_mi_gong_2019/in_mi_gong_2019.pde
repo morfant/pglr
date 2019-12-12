@@ -28,10 +28,17 @@ float baseLineY = 0;
 
 int pad = 10;
 
-int r1 = 10;
-int g1 = 80;
-int b1 = 200;
-int a1 = 200;
+// blue
+//int r1 = 10;
+//int g1 = 80;
+//int b1 = 200;
+//int a1 = 200;
+
+int r1 = 255;
+int g1 = 255;
+int b1 = 255;
+int a1 = 255;
+
 
 boolean isReset = false;
 boolean makeGoAround = false;
@@ -44,9 +51,9 @@ float vAngle1 = -0.5;
 // ArrayList<Figure> loadedFigures;
 
 void setup() {
-  size(1280, 900);
+  //size(1280, 900);
    //size(1920, 1080);
-  // fullScreen();
+   fullScreen();
   background(255);
   rectMode(CENTER);
 
@@ -76,7 +83,7 @@ void draw() {
   if (makeBlack) {
     background(0, 0, 0, 255);
   } else {
-    background(255);
+    background(0, 255);
   }
 
   if (circleOverwhelm) {
@@ -109,7 +116,7 @@ void draw() {
       // Figure c = new Figure(0, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
       // Figure c = new Figure(1, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
       // Figure c = new Figure(2, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
-      Figure c = new Figure(3, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
+      Figure c = new Figure((int)random(2, 3), width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
  
 
       if (circleOverwhelm) {
@@ -132,7 +139,7 @@ void draw() {
 
       // blue
       if (!circleOverwhelm) {
-        c.setAging(false);
+        c.setAging(true);
         c.setFillColor(r1, g1, b1, a1);
         c.setStrokeColor(170, 170, 190, 200);
       } else {
