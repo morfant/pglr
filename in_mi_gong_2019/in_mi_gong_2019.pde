@@ -10,6 +10,7 @@ Amplitude amp;
 AudioIn in;
 
 float ampThr1 = 0.005;
+float ampThr2 = 0.2; // figure change threshold
 
 // in jeokdo
 float mulAmp1 = 4600;
@@ -50,12 +51,15 @@ float vAngle1 = -0.5;
 // to save writing as a file
 // ArrayList<Figure> loadedFigures;
 
+int figureType = 2;
+
 void setup() {
-  //size(1280, 900);
+  size(1280, 900);
    //size(1920, 1080);
-   fullScreen();
+  // fullScreen();
   background(255);
   rectMode(CENTER);
+  noCursor();
 
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 12000);
@@ -97,8 +101,14 @@ void draw() {
   // Update buffer
   newValue = amp.analyze(); // input ch 1
 
+
   // ------------------------------------------------------------- 1 figures -------------------------------------------------------------------
   if (newValue > ampThr1) {
+
+    // println(pitchIdx);
+    if (newValue > ampThr2){
+      figureType = (int)random(0, 10);
+    }
 
     if (pitchGrabbed == false) {
       pitch = pitchIdx;
@@ -116,7 +126,7 @@ void draw() {
       // Figure c = new Figure(0, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
       // Figure c = new Figure(1, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
       // Figure c = new Figure(2, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
-      Figure c = new Figure((int)random(2, 3), width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
+      Figure c = new Figure(figureType, width/2, baseLineY - pitch * 10, mulAmp1 * v, true, true, pad);
  
 
       if (circleOverwhelm) {
@@ -157,7 +167,6 @@ void draw() {
       pitchInterval++;
     }
   }
-
 
   // reset
   if (isReset == true) {

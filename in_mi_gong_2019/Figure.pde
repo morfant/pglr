@@ -34,7 +34,7 @@ class Figure implements Serializable {
 
     float deadLineX = 0;
 
-    float strokeWeight = 2;
+    float strokeWeight = 5;
     float distFromCenter = 0;
 
     Figure(int _type, float x, float y, float r, boolean _isFill, boolean _isStroke, float _deadlineX) {
@@ -121,10 +121,8 @@ class Figure implements Serializable {
 
       
         if (aging) {
-          println("aging");
             if (age > AGE_LIMIT) {
                 isDead = true;
-                println("dddd");
             } else {
                 // println("age: " + age);
                 age++;
@@ -167,6 +165,7 @@ class Figure implements Serializable {
         translate(width/2, height/2);
 
         figures(type);
+        // figures(9);
 
         popMatrix();
 
@@ -177,6 +176,7 @@ class Figure implements Serializable {
         if (goAround) {
             rotate(radians(anglePos));
         } 
+
 
         switch (_type) {
             case 0:
@@ -189,6 +189,7 @@ class Figure implements Serializable {
             
             case 2:
                 drawTriangle(0, 0, radius);
+                // polygon(0, 0, radius, 3);
             break;
 
             case 3:
@@ -197,10 +198,30 @@ class Figure implements Serializable {
             break;
 
             case 4:
-                beginShape();
-                // vertex();
-                endShape();
+                polygon(0, 0, radius, 5);
             break;
+
+            case 5:
+                polygon(0, 0, radius, 6);
+            break;
+
+            case 6:
+                polygon(0, 0, radius, 7);
+            break;
+
+            case 7:
+                polygon(0, 0, radius, 8);
+            break;
+
+            case 8:
+                polygon(0, 0, radius, 9);
+            break;
+
+            case 9:
+                rotate(frameCount/100.0);
+                snow((int)constrain(radius, 0, width/2), (int)constrain(radius, 0, height/2));
+            break;
+
 
             default:
             break;	
@@ -215,6 +236,40 @@ class Figure implements Serializable {
     void drawTriangle(float x, float y, float r) {
 
         triangle(x - r/2, y - r/2, x, y + r/2, x + r/2, y - r/2);
+
+    }
+
+    void polygon(float x, float y, float radius, int npoints) {
+        float angle = TWO_PI / npoints;
+        beginShape();
+        for (float a = 0; a < TWO_PI; a += angle) {
+            float sx = x + cos(a) * radius;
+            float sy = y + sin(a) * radius;
+            vertex(sx, sy);
+        }
+        endShape(CLOSE);
+    }
+
+    void snow(int w, int h) {
+
+        int step = 40;
+
+        pushMatrix();
+        translate(-w/2, -h/2);
+
+        for (float i = 0; i < w; i+=step) {
+            for (float j = 0; j < h; j+=step) {
+                float n = noise(frameCount/100.0);
+                noStroke();
+                // fill(n * 255);
+                // noFill();
+                // ellipse(i + random(step), j + random(step) , 2, n * step*2);
+                float rr = random(h/2);
+                ellipse(i + random(step), j + random(step) , rr * n, rr * n);
+            }
+        }
+
+        popMatrix();
 
     }
 
