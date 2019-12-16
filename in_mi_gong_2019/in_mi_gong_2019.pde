@@ -54,9 +54,9 @@ float vAngle1 = -0.5;
 int figureType = 2;
 
 void setup() {
-  size(1280, 900);
+  // size(1280, 900);
    //size(1920, 1080);
-  // fullScreen();
+  fullScreen();
   background(255);
   rectMode(CENTER);
   noCursor();
