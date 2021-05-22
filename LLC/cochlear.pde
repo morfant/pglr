@@ -16,7 +16,11 @@ class Cochlear {
     int col_b = 0;
     color col = color(col_r, col_g, col_b);
     boolean isSpin = false;
+    boolean isSwing = false;
     int spinAngle = 0;
+    float spinOffset = 0;
+    float swingDiv = 0;
+    float swingRange = 0;
 
     Cochlear(float _x, float _y) {
         posX = _x;
@@ -51,12 +55,19 @@ class Cochlear {
         angle = a;
     }
 
+    void setSwing(boolean b, float sw_d, float sw_r) {
+        isSwing = b;
+        swingDiv = sw_d;
+        swingRange = sw_r;
+    }
+
     void setStartTime(float t) {
         startTime = t;
     }
 
-    void setSpin(boolean b) {
+    void setSpin(boolean b, float _spinOffset) {
         isSpin = b;
+        spinOffset = _spinOffset;
     }
 
     void update() {
@@ -78,6 +89,10 @@ class Cochlear {
         } else {
             spinAngle = 0;
         }
+
+        if (isSwing) {
+            angle = angle + sin(time/swingDiv) * swingRange;
+        }
     }
 
 
@@ -92,8 +107,9 @@ class Cochlear {
         
         beginShape();
         strokeWeight(2);
+        noFill();
         for (int i = 0; i < 360 * lengthMul; i++) {
-           float theta = radians(i + spinAngle);
+           float theta = radians(i + spinAngle + spinOffset);
            float r = a + b * theta;
            float x = r * cos(theta) + posXoffset;
            float y = r * sin(theta);

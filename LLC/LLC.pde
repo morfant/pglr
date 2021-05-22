@@ -11,12 +11,14 @@ float marginRight = 128;
 // float[] yAxis = new float[29];
 PVector[] points = new PVector[5];
 float alpha = 0;
-Cochlear co;
+Cochlear[] cocs = new Cochlear[3];
+boolean isCocDance = false;
 
 void setup() {
   // 2560, 1800 // img size
   // 853, 600 // img size /3
   size(853, 600);
+  frameRate(15);
   // fullScreen();
   noCursor();
 
@@ -28,7 +30,14 @@ void setup() {
   points[3] = new PVector(668, 15);
   points[4] = new PVector(width - marginRight, 40);
 
-  co = new Cochlear(width/2, height/2);
+  for (int i = 0; i < 3; i++) {
+    cocs[i] = new Cochlear(width/2, height/2);
+  }
+
+  cocs[0].setSwing(true, 30, 3);
+  cocs[1].setSwing(true, 50, 2);
+  cocs[2].setSwing(true, 80, 4);
+
 
   amp = new Amplitude(this);
   file = new SoundFile(this, "sleeve.mp3");
@@ -52,25 +61,31 @@ void draw() {
   stroke(0);
   strokeWeight(4);
   float x = constrain(mouseX, marginLeft, width-marginRight);
-  // line(x, marginTop, x, height - marginBottom);
 
-  if (alpha < 20) {
-    float vol = amp.analyze();
-    println(vol);
-    co.setCoefs(vol * 2, vol * 9);
-    co.setOffsetStep(0.19 - (vol/2));
-    co.setSpin(true);
-  } else {
-    co.setCoefs(1, 0);
-    co.setOffsetStep(0.19);
-    co.setSpin(false);
+  if (!isCocDance) {
+    line(x, marginTop, x, height - marginBottom);
   }
 
-  // co.setColor(color(255, 205, 0));
-  co.setPos(x, height - marginBottom);
-  co.setAngle(270);
-  co.update();
-  co.draw();
+  if (isCocDance) {
+    float vol = amp.analyze();
+    for (int i = 0; i < 3; i++) {
+      cocs[i].setCoefs(vol * 2, vol * 4);
+      cocs[i].setOffsetStep(0.19 - (vol/2));
+      cocs[i].setSpin(true, i * 30);
+      cocs[i].setPos(x, height - marginBottom);
+      // cocs[i].setAngle(264 + (i * 6));
+      cocs[i].setAngle(270);
+      cocs[i].update();
+      cocs[i].draw();
+    }
+  }
+  // else {
+  //   for (int i = 0; i < 3; i++) {
+  //     cocs[i].setCoefs(1, 0);
+  //     cocs[i].setOffsetStep(0.19);
+  //     cocs[i].setSpin(false);
+  //   }
+  // }
 
 
   // println(mouseX);
@@ -97,10 +112,18 @@ void draw() {
 
   alpha = map(val, 0, 70, 0, 255);
 
-  // println(alpha);
+  if (alpha < 1) {
+    println("SOLO!");
+  }
 
   // set volume
   float vol = map(alpha, 0, 255, 1.0, 0.0);
   file.amp(vol);
 
+}
+
+void keyPressed() {
+  if (key == 'h') {
+    isCocDance = !isCocDance;
+  }
 }

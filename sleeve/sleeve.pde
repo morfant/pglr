@@ -3,6 +3,7 @@
 
 import processing.sound.*;
 SoundFile file;
+Amplitude amp;
 boolean TWO_IN = false;
 int bands = 512;
 FFT fft;
@@ -20,13 +21,13 @@ ArrayList<Cochlear> cocs = new ArrayList<Cochlear>();
 
 void setup() {
   // size(1280, 720); // HD
-  size(640, 360); // HD /2
-  frameRate(10);
-  // fullScreen();
+  // size(640, 360); // HD /2
+  frameRate(15);
+   fullScreen();
   // smooth(8);
   background(255);
   //rectMode(CENTER);
-  // noCursor();
+   noCursor();
 
   visualizeMul = width; // stream
   // Load a soundfile from the /data folder of the sketch and play it back
@@ -36,13 +37,15 @@ void setup() {
 
   // Create an Input stream which is routed into the Amplitude analyzer
   fft = new FFT(this, bands);
-  in = new AudioIn(this, 0);
-
-  // start the Audio Input
-  in.start();
+  // in = new AudioIn(this, 0);
+  // in.start();
 
   // patch the AudioIn
   fft.input(file);
+
+
+  // amp = new Amplitude(this);
+  // amp.input(file);
   
   
   for (int i = 0; i < 4; i++) {
@@ -53,16 +56,16 @@ void setup() {
   }
   
     Cochlear co = cocs.get(0);
-    co.setStartTime(500);
+    co.setStartTime(0);
 
     co = cocs.get(1);
-    co.setStartTime(1500);
+    co.setStartTime(0);
 
     co = cocs.get(2);
-    co.setStartTime(0);
+    co.setStartTime(1000);
 
     co = cocs.get(3);
-    co.setStartTime(0);
+    co.setStartTime(500);
 
 
   // for (int i = 0; i < 3; i++) {
@@ -151,8 +154,9 @@ void draw()
  
   for (int i = 0; i < a; i++) {
     Cochlear co = cocs.get(i);
-    co.setCoefs(1, spectrum[250] * visualizeMul);
-    co.setOffsetStep(spectrum[300] * visualizeMul/2);
+    co.setCoefs(spectrum[300] * visualizeMul, spectrum[400] * visualizeMul);
+    // co.setCoefs(1, 0.1);
+    co.setOffsetStep(spectrum[300] * visualizeMul/3);
     co.update();
     co.draw();
     
